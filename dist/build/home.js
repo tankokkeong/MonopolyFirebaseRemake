@@ -40,36 +40,6 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var fire
 
 /***/ }),
 
-/***/ "./src/login.js":
-/*!**********************!*\
-  !*** ./src/login.js ***!
-  \**********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var firebase_app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! firebase/app */ \"./node_modules/firebase/app/dist/esm/index.esm.js\");\n/* harmony import */ var firebase_database__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! firebase/database */ \"./node_modules/firebase/database/dist/esm/index.esm.js\");\n\r\n\r\n\r\nconst firebaseConfig = {\r\n    apiKey: \"AIzaSyAOaIjem-aPiQrmxn4K6Rnm-X9UcRg9q9c\",\r\n    authDomain: \"ewa-assignment-2.firebaseapp.com\",\r\n    databaseURL: \"https://ewa-assignment-2-default-rtdb.firebaseio.com\",\r\n    projectId: \"ewa-assignment-2\",\r\n    storageBucket: \"ewa-assignment-2.appspot.com\",\r\n    messagingSenderId: \"654792555384\",\r\n    appId: \"1:654792555384:web:e9099310e35dce591aa68d\"\r\n};\r\n\r\n(0,firebase_app__WEBPACK_IMPORTED_MODULE_0__.initializeApp)(firebaseConfig);\r\n\r\nfunction writeUserData() {\r\n    const db = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.getDatabase)();\r\n    (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.set)((0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.ref)(db, 'users/' + \"sdasda\"), {\r\n        username: \"name\",\r\n        email: \"email\",\r\n        profile_picture : \"imageUrl\"\r\n    });\r\n}\r\n\r\n\n\n//# sourceURL=webpack://monopolyfirebaseremake/./src/login.js?");
-
-/***/ }),
-
-/***/ "./src/register.js":
-/*!*************************!*\
-  !*** ./src/register.js ***!
-  \*************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var firebase_app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! firebase/app */ \"./node_modules/firebase/app/dist/esm/index.esm.js\");\n/* harmony import */ var firebase_database__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! firebase/database */ \"./node_modules/firebase/database/dist/esm/index.esm.js\");\n\r\n\r\n\r\nconst firebaseConfig = {\r\n    apiKey: \"AIzaSyAOaIjem-aPiQrmxn4K6Rnm-X9UcRg9q9c\",\r\n    authDomain: \"ewa-assignment-2.firebaseapp.com\",\r\n    databaseURL: \"https://ewa-assignment-2-default-rtdb.firebaseio.com\",\r\n    projectId: \"ewa-assignment-2\",\r\n    storageBucket: \"ewa-assignment-2.appspot.com\",\r\n    messagingSenderId: \"654792555384\",\r\n    appId: \"1:654792555384:web:e9099310e35dce591aa68d\"\r\n};\r\n\r\n(0,firebase_app__WEBPACK_IMPORTED_MODULE_0__.initializeApp)(firebaseConfig);\r\n\n\n//# sourceURL=webpack://monopolyfirebaseremake/./src/register.js?");
-
-/***/ }),
-
-/***/ "./src/room.js":
-/*!*********************!*\
-  !*** ./src/room.js ***!
-  \*********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var firebase_app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! firebase/app */ \"./node_modules/firebase/app/dist/esm/index.esm.js\");\n/* harmony import */ var firebase_database__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! firebase/database */ \"./node_modules/firebase/database/dist/esm/index.esm.js\");\n\r\n\r\n\r\nconst firebaseConfig = {\r\n    apiKey: \"AIzaSyAOaIjem-aPiQrmxn4K6Rnm-X9UcRg9q9c\",\r\n    authDomain: \"ewa-assignment-2.firebaseapp.com\",\r\n    databaseURL: \"https://ewa-assignment-2-default-rtdb.firebaseio.com\",\r\n    projectId: \"ewa-assignment-2\",\r\n    storageBucket: \"ewa-assignment-2.appspot.com\",\r\n    messagingSenderId: \"654792555384\",\r\n    appId: \"1:654792555384:web:e9099310e35dce591aa68d\"\r\n};\r\n\r\n(0,firebase_app__WEBPACK_IMPORTED_MODULE_0__.initializeApp)(firebaseConfig);\r\n\n\n//# sourceURL=webpack://monopolyfirebaseremake/./src/room.js?");
-
-/***/ }),
-
 /***/ "./node_modules/@firebase/app/dist/esm/index.esm2017.js":
 /*!**************************************************************!*\
   !*** ./node_modules/@firebase/app/dist/esm/index.esm2017.js ***!
@@ -212,10 +182,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module can't be inlined because the eval devtool is used.
-/******/ 	__webpack_require__("./src/login.js");
-/******/ 	__webpack_require__("./src/register.js");
-/******/ 	__webpack_require__("./src/home.js");
-/******/ 	var __webpack_exports__ = __webpack_require__("./src/room.js");
+/******/ 	var __webpack_exports__ = __webpack_require__("./src/home.js");
 /******/ 	
 /******/ })()
 ;

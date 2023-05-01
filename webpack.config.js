@@ -2,10 +2,15 @@ const path = require("path");
 
 module.exports = {
     mode: "development",
-    entry : ["./src/login.js", "./src/register.js", "./src/home.js", "./src/room.js"],
+    entry : {
+        login: "./src/login.js",
+        register: "./src/register.js",
+        home : "./src/home.js",
+        room : "./src/room.js"
+    },
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'bundle.js'
+        path: path.resolve(__dirname, 'dist/build'),
+        filename: '[name].js'
     },
     watch: true
 }

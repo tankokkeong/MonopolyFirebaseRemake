@@ -5,6 +5,10 @@ body{
     background-image: url('../images/monopoly-background.jpg');
 }
 
+a{
+    cursor: pointer;
+}
+
 .page-container{
     padding: 40px;
 }

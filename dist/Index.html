@@ -22,13 +22,15 @@
 
     <link rel="stylesheet" href="style/login.css">
     <link rel="stylesheet" href="style/app.css">
+    <script src="helper.js"></script>
+
 </head>
 <body>
     <div class="page-container">
         <div class="login-page-container">
             <div class="header-container">
                 <nav class="navbar navbar-expand-lg navbar-dark bg-success">
-                    <a class="navbar-brand" href="#"><img src="images/monopoly-man.png" height="40px" width="40px"> Monopoly</a>
+                    <span class="navbar-brand"><img src="images/monopoly-man.png" height="40px" width="40px"> Monopoly</span>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
@@ -40,11 +42,10 @@
                         <form class="form-inline my-2 my-lg-0">
                             <ul class="navbar-nav mr-auto">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#/login">Login</a>
+                                    <a class="nav-link text-light" onclick="route('Index')">Login</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#/register">Sign Up</a>
-                                    <!-- <a class="nav-link" href="#/login" hidden>Logout</a> -->
+                                    <a class="nav-link text-light" onclick="route('Register')">Sign Up</a>
                                 </li>
                             </ul>            
                         </form>
@@ -65,7 +66,7 @@
                             </div>
                             <form class="login-input mt-5" @submit.prevent="submit">
                                 <div class="form-group">
-                                  <input type="email" 
+                                    <input type="email" 
                                         class="form-control" 
                                         placeholder="Your Email"
                                         v-model="email"
@@ -74,7 +75,7 @@
                                         ref="email">
                                 </div>
                                 <div class="form-group">
-                                  <input type="password" 
+                                    <input type="password" 
                                         class="form-control" 
                                         placeholder="Your Password"
                                         v-model.trim="password"
