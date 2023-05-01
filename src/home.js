@@ -1,5 +1,7 @@
 import { initializeApp } from 'firebase/app';
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { getDatabase, ref, set } from "firebase/database";
+import { route } from '../dist/script/module-helper';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAOaIjem-aPiQrmxn4K6Rnm-X9UcRg9q9c",
@@ -11,4 +13,22 @@ const firebaseConfig = {
     appId: "1:654792555384:web:e9099310e35dce591aa68d"
 };
 
-initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth();
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        route("Index");
+    } 
+});
+
+const LogoutAction = document.getElementById("logout-action");
+LogoutAction.addEventListener("click", (e) => {
+    signOut(auth).then(() => {
+        setCookie("AuathenticatedUID", "", -7);
+        route("Index");
+    }).catch((error) => {
+        // An error happened.
+        console.log(error)
+    });
+});

@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword  } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { setCookie, displayCustomMessage, route, getUrlParams } from '../dist/script/module-helper';
 
 const firebaseConfig = {
@@ -16,6 +16,13 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
+
+//Check Is Authenticated
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        route("Home");
+    } 
+});
 
 //Check if the user is registered
 if(getUrlParams("Registered") != null){

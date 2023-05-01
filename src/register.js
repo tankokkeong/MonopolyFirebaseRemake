@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword   } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, set } from "firebase/database";
 import { displayCustomMessage, route } from '../dist/script/module-helper';
 
@@ -18,6 +18,13 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
 const db = getDatabase();
+
+//Check Is Authenticated
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        route("Home");
+    } 
+});
 
 const RegisterBtn = document.getElementById("register-btn");
 RegisterBtn.addEventListener("click", (e) => {
