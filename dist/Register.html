@@ -30,11 +30,11 @@
         
             <div class="header-container">
                 <nav class="navbar navbar-expand-lg navbar-dark bg-success">
-                    <a class="navbar-brand" href="#"><img src="images/monopoly-man.png" height="40px" width="40px"> Monopoly</a>
+                    <span class="navbar-brand"><img src="images/monopoly-man.png" height="40px" width="40px"> Monopoly</span>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                   
+                    
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav mr-auto">
                         
@@ -42,11 +42,10 @@
                         <form class="form-inline my-2 my-lg-0">
                             <ul class="navbar-nav mr-auto">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#/login">Login</a>
+                                    <a class="nav-link text-light" onclick="route('Index')">Login</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#/register">Sign Up</a>
-                                    <!-- <a class="nav-link" href="#/login" hidden>Logout</a> -->
+                                    <a class="nav-link text-light" onclick="route('Register')">Sign Up</a>
                                 </li>
                             </ul>            
                         </form>
@@ -67,39 +66,40 @@
                             <h1 class="text-dark">Sign Up</h1>
                         </div>
     
-                        <form class="signup-input mt-5" @submit.prevent="submit">
+                        <div class="signup-input mt-5">
                             <div class="form-group">
-                                <input type="text" 
-                                        class="form-control" 
-                                        placeholder="Your Name"
-                                        v-model.trim="name"
-                                        required
-                                        v-focus
-                                        maxlength="50"
-                                        ref="name">
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    placeholder="Your Name"
+                                    id="username"
+                                >
                             </div>
     
                             <div class="form-group">
-                                <input type="email" 
+                                <input 
+                                    type="email" 
                                     class="form-control" 
                                     placeholder="Your Email"
-                                    v-model="email"
-                                    required>
+                                    id="user-email"
+                                >
                             </div>
     
                             <div class="form-group">
                                 <input type="password" 
                                     class="form-control" 
                                     placeholder="Your Password"
-                                    v-model.trim="password"
-                                    required
-                                    minlength="6"
-                                    maxlength="50">
+                                    id="user-password"
+                                >
+                            </div>
+
+                            <div>
+                                <span id="register-message" class="text-danger"></span>
                             </div>
     
-                            <div class="mt-5 text-center">
-                                <button class="btn btn-pistachio"><i class="fa fa-rocket motorcycle" aria-hidden="true"></i>   Sign Up</button>
-                                <button class="btn btn-danger"   @click.prevent="reset"><i class="fa fa-refresh"></i> Reset</button>
+                            <div class="mt-3 text-center">
+                                <button id="register-btn" class="btn btn-pistachio"><i class="fa fa-rocket motorcycle" aria-hidden="true"></i>   Sign Up</button>
+                                <button class="btn btn-danger"><i class="fa fa-refresh"></i> Reset</button>
                             </div>
     
                             <div class="loader text-center mt-3" style="display: none;">
@@ -111,14 +111,14 @@
                             <div class="createAcc text-center mt-4 mb-3">
                                 <a class="custom-link" onclick="route('Index')">Already Have An Account? Click Here</a>
                             </div>
-                        </form>               
+                        </div>               
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="bundle.js"></script>
+    <script src="build/register.js"></script>
 
 </body>
 </html>

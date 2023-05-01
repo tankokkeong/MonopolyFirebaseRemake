@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword  } from "firebase/auth";
-import { setCookie, displayCustomMessage, route } from '../dist/script/module-helper';
+import { setCookie, displayCustomMessage, route, getUrlParams } from '../dist/script/module-helper';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAOaIjem-aPiQrmxn4K6Rnm-X9UcRg9q9c",
@@ -16,6 +16,11 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
+
+//Check if the user is registered
+if(getUrlParams("Registered") != null){
+    displayCustomMessage("login-message", "<span class='text-success'>You may login now</span>");
+}
 
 const LoginBtn = document.getElementById("login-btn");
 LoginBtn.addEventListener("click", (e) => {

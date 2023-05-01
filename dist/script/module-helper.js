@@ -25,6 +25,18 @@ export const displayCustomMessage = (id, message) =>{
     container.innerHTML = message;
 }
 
-export const route = (page) => {
-    window.location.href = page + ".html";
+export const route = (page, param = "") => {
+    if(param == ""){
+        window.location.href = page + ".html";
+    }
+    else{
+        window.location.href = page + ".html?" + param;
+    }
 };
+
+export const getUrlParams = (paramName) => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+
+    return urlParams.get(paramName);
+}
