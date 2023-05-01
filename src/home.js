@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { getDatabase, ref, set, child, get } from "firebase/database";
+import { getDatabase, ref, set, child, get, onValue } from "firebase/database";
 import { route } from '../dist/script/module-helper';
 
 const firebaseConfig = {
@@ -17,6 +17,9 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 const dbRef = ref(getDatabase());
 const auth = getAuth();
+const numberOfRoomDisplay = document.getElementById("total-room");
+const roomDisplay = document.getElementById("room-table");
+var numberOfRoom = 0;
 var userID;
 var username;
 
@@ -29,6 +32,40 @@ onAuthStateChanged(auth, (user) => {
         get(child(dbRef, `users/${userID}`)).then((snapshot) => {
         if (snapshot.exists()) {
             username = snapshot.val().username;
+
+            //Display Room
+            const RoomRef = ref(db, 'rooms/');
+            onValue(RoomRef, (snapshot) => {
+                //Empty the previous html tag
+                roomDisplay.innerHTML = "";
+
+                snapshot.forEach((childSnapshot) => {
+                    const data = childSnapshot.val();
+                    numberOfRoom++;
+                    console.log(data)
+                    const roomAction =  childSnapshot.val().status == "Start" ? 
+                    `<td style="position: relative">
+                        <span class="text-danger">Not Available</span>
+                    </td>`
+                    :
+                    `<td style="position: relative">
+                        <a class="btn btn-primary" onclick="route('Room','` +  childSnapshot.key + `')">Join Game</button>                    
+                    </td>`;
+
+                    roomDisplay.innerHTML = roomDisplay.innerHTML+
+                    `<tr>
+                        <td>` + childSnapshot.key + `</td>
+                        <td class="text-warning">` + childSnapshot.val().status + `</td>
+                        <td>` + childSnapshot.val().numOfPlayer + `/4</td>` + 
+                        roomAction
+                        +
+                    `</tr>`;
+                });
+
+                //Display number of room
+                numberOfRoomDisplay.innerHTML = numberOfRoom + " room(s)";
+            });
+
         } else {
             console.log("Invalid User");
         }
@@ -55,6 +92,7 @@ CreateRoomBtn.addEventListener("click", (e) => {
         createdBy: userID,
         createdName : username,
         createdAt: new Date(),
+        numOfPlayer: 1,
         status : "Waiting",
         CurrentDiceNumber : 0,
         CurrentPlayerSequence : 1
