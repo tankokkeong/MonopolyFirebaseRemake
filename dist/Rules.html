@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rules</title>
+
+    <!-- JQuery -->
+    <script src="https://kenny-framework.netlify.app/jQuery-v3.5.1.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://kenny-framework.netlify.app/bootstrap-v4.5.3.css">
+    <script src="https://kenny-framework.netlify.app/bootstrap-v4.5.3.js"></script>
+        
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://kenny-framework.netlify.app/font-awesome-4.7.0.css">
+    <script src="https://kenny-framework.netlify.app/font-awesome-4.7.0.js"></script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/images/monopoly-man.png">
+
+    <link rel="stylesheet" href="style/app.css">
+</head>
+<body>
+    <div class="page-container">
+        <div class="home-container" >
+            <div class="header-container">
+                <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+                    <a class="navbar-brand" href="#"><img src="images/monopoly-man.png" height="40px" width="40px"> Monopoly Home Page</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                   
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav mr-auto">
+                        
+                        </ul>
+                        <form class="form-inline my-2 my-lg-0">
+                            <ul class="navbar-nav mr-auto">
+                                <li class="nav-item">
+                                    <p class="nav-link">Welcome Player <b id="name"></b></p>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="logout" onclick="logout()" style="cursor: pointer;">Logout</a>
+                                </li>
+                            </ul>            
+                        </form>
+                    </div>
+                </nav> 
+            </div>
+    
+            <ul class="homepage-container nav bg-white mt-3">
+                <li class="nav-item">
+                  <a class="nav-link active" href="#/home">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#/rules">Rules</a>
+                </li>
+              </ul>
+    
+            <div class="login-container">
+                <div class="login-body">
+                        <div class="login-form border border-light shadow-lg p-3 mb-5 bg-white rounded">
+        
+                            <div class="mt-3 mb-3 ">
+                                <h2 class="text-dark">Learn To Play</h2>
+    
+                                <p class="mt-3">
+                                    The rules of Monopoly are not difficult, but they are specific. Monopoly can be played by 2+ players, depending on the number of player tokens available.<br><br>
+                                    Monopoly requires a special board, 32 houses, 12 hotels, Chance and Community Chest cards, Title Deed cards for each property, play money, player tokens, and two six-sided dice.<br><br>
+                                    Each player chooses a token and places it on ‘Go’, and is provided with $1500 as follows: 2 of each $500’s, $100’s, and $50’s; 6 $20’s; and 5 of each $10’s, $5’s, and $1’s. One player is the Banker. All assets of the Bank should be separate from the Banker’s own assets. The Bank controls all remaining money and all properties and buildings until they are purchased. The Bank can never ‘go broke’ – more money should be made if needed.<br><br>
+        
+                                    <h5>Game Play</h5><br>
+    
+                                    According to the rules of Monopoly, the player that roles the highest total on both dice goes first. Game play proceeds clockwise from that player.<br><br>
+                                    There are 4 main parts to a turn.<br><br>
+                                    1) Roll the dice. Move the number of squares indicated. If you throw doubles, you take another turn after your turn is completed. Each time you pass ‘Go’, collect $200 from the Bank.<br><br>
+                                    2) Buy properties. You may buy any property from the Bank that you land on if it is not already owned. If you do not purchase the property, the Banker auctions the property to the highest bidder. Some people chose not to use auctions, only allowing properties to be purchased as they are landed on.<br><br>
+                                    3) Building. You may only build when you own all properties in a color group. Building must be equal on all properties in a group. You may place a single building on a single property, but you may not place two buildings on one property unless all other properties in the group have one building present (even build rule). Any property can have a total of 4 houses, except Utilities and Railroads, which cannot be devloped. To place a hotel on a property, 4 houses must be present on all properties in the group. Houses are removed from the property when a hotel is placed. All buildings are purchased from the Bank.<br><br>
+                                    Complete necessary actions. Pay rent as determined by the Title Deed for the property you are on. Pay Income Tax to the Bank ($200 or 10% of your total assets). Draw a Community Chest or Chance card and follow the instructions. These cards are returned to the bottom of the pile when the action is completed.<br><br>
+                                
+                                    <h5>Going To Jail</h5><br>
+    
+                                    In the rules of Monopoly, there are 3 ways to be sent to ‘Jail’:<br><br>
+                                    1) Land on a space marked ‘Go to Jail’<br>
+                                    2) Draw a card marked ‘Go to Jail’<br>
+                                    3) Roll doubles three times in a row<br><br>
+    
+                                    There are 4 ways to get out of ‘Jail’<br><br>
+                                    1) Pay the $50 fine before rolling the dice<br>
+                                    2) Use a ‘Get Out Of Jail Free Card’ before rolling the dice<br>
+                                    3) Roll doubles<br>
+                                    4) After the 3rd failed attempt to roll doubles, you must pay the $50 fine and leave jail<br><br>
+    
+                                    When you get out of ‘Jail’, move the number of spaces indicated by the dice. Even while in ‘Jail’, you may buy and sell property and collect any rent owed to you. You are not sent to ‘Jail’ if you land on the ‘Jail’ square during normal game play, and you do not incur a fine.<br><br>
+    
+                                    <h5>Money to Pay Rent, etc</h5><br>
+    
+                                    The rules of Monopoly state, if you do not have enough money to pay Rent or other obligations during your turn, you may chose to sell houses, hotels, or property. Buildings may be sold to the Bank for one-half of the purchase price. Buildings may not be sold to other players. Unimproved properties (including railroad and utilities) can be sold to any player for any amount.<br><br>
+    
+                                    Unimproved properties can also be mortgaged to the Bank for the value mortgage value printed on the Title Deed. No rent is collected on mortgaged properties. To lift a mortgage, the player must pay the Bank the mortgage amount plus 10% interest. Players retain possession of mortgaged properties. If that player chooses, he or she may sell the mortgaged property to another player for any price. The property would remain mortgaged, and the new owner would have to pay the Bank the same mortgage + 10% to lift the mortgage.<br><br>
+                                
+                                    <h5>Winning the Game</h5><br>
+    
+                                    You may chose to end the game at any time and tally the total worth of each player (including buildings and all property worth). You may also chose to play until all but one player has been declared Bankrupt. Bankruptcy occurs when a player owes more than he or she can pay. You must turn over all that you have including money and Title Deeds to the Bank or another player, depending on who the current debt is owed to. Any player who has declared Bankruptcy is no longer part of the game. According to the rules of Monopoly, the last player in the game, or the player with the most money, wins.<br>
+                                </p>
+                            </div>
+    
+    
+                        </div>
+                    </div>   
+            </div>
+        </div>
+    </div>
+</body>
+</html>

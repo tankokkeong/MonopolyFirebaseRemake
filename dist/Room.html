@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Room</title>
+
+    <!-- JQuery -->
+    <script src="https://kenny-framework.netlify.app/jQuery-v3.5.1.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://kenny-framework.netlify.app/bootstrap-v4.5.3.css">
+    <script src="https://kenny-framework.netlify.app/bootstrap-v4.5.3.js"></script>
+        
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://kenny-framework.netlify.app/font-awesome-4.7.0.css">
+    <script src="https://kenny-framework.netlify.app/font-awesome-4.7.0.js"></script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/images/monopoly-man.png">
+
+    <link rel="stylesheet" href="style/login.css">
+    <link rel="stylesheet" href="style/app.css">
+    <link rel="stylesheet" href="style/room.css">
+    <link rel="stylesheet" href="style/dice.css">
+
+
+</head>
+<body>
+    <div class="game-container">
+
+        <div class="game-map">
+
+            <div class="map-container">
+
+                <!-- Join Game Container -->
+                <!-- <div id="join-game-container">
+
+                    <div id="join-game-form-container">
+                        <div class="text-center mb-3">
+                            <h1>Join Game</h1>
+                        </div>
+
+                        <form class="form" @submit.prevent="joinGame">
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Your Favorite Piece: </label>
+
+                                <div class="col-sm-8">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="piece" id="car" value="<i class='fa fa-car' aria-hidden='true'></i>" checked>
+                                        <label class="form-check-label join-game-label" for="car">
+                                            <i class="fa fa-car player-color-1" aria-hidden="true"></i> 
+                                            Car
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="piece" id="bug" value="<i class='fa fa-bug' aria-hidden='true'></i>">
+                                        <label class="form-check-label join-game-label" for="bug">
+                                            <i class="fa fa-bug player-color-2" aria-hidden="true"></i>
+                                            Bug
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="piece" id="motorcycle" value="<i class='fa fa-motorcycle' aria-hidden='true'></i>">
+                                        <label class="form-check-label join-game-label" for="motorcycle">
+                                            <i class="fa fa-motorcycle player-color-3" aria-hidden="true"></i> 
+                                            Motorcycle
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="piece" id="fighter-jet" value="<i class='fa fa-fighter-jet' aria-hidden='true'></i>">
+                                        <label class="form-check-label join-game-label" for="fighter-jet">
+                                            <i class="fa fa-fighter-jet player-color-4" aria-hidden="true"></i> 
+                                            Fighter Jet
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="text-center">
+                                <button class="btn btn-success">Join Game</button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div> -->
+
+                <!-- Google Map container -->
+                <div id="google-map-container" style="display: none;">
+                    <div class="text-center">
+                        <h4>Choose your property</h3>
+                    </div>
+
+                    <div id="map"></div>
+
+                    <div class="text-center mt-2" id="location-action-section">
+                        <button class="btn btn-success" @click.prevent="confirmLocation">Confirm Location</button>
+                        <button class="btn btn-danger" @click.prevent="removeGoogleMapContainer">Cancel Deal</button>
+                    </div>
+                </div>
+                
+                <!-- Card Display -->
+                <div id="community-chest-display-container" class="text-center" style="display: none;">
+                    <div id="chest-display-title">
+                        <img src="images/community-chest.png" alt=""> 
+                        <span class="text-light font-weight-bold">Community Chest</span>
+                    </div>
+
+                    <div id="chest-content" class="mt-3 text-light text-left">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore similique, quae dolorum unde ipsum quis, 
+                        esse debitis aperiam fugiat, non id nemo quidem possimus voluptatem ad a! 
+                        Voluptatem voluptate quos nihil architecto voluptates? Maiores esse amet ab ducimus harum vitae.
+                    </div>
+
+                    <div class="mt-2">
+                        <button class="btn btn-success border border-dark">Confirm</button>
+                    </div>
+                </div>
+
+                <div id="chance-display-container" class="text-center" style="display: none;">
+
+                    <div id="chance-title-display" class="text-center text-white">
+                        Chance
+                    </div>
+
+                    <div id="chance-content" class="mt-3 text-light text-left">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore similique, quae dolorum unde ipsum quis, 
+                        esse debitis aperiam fugiat, non id nemo quidem possimus voluptatem ad a! 
+                        Voluptatem voluptate quos nihil architecto voluptates? Maiores esse amet ab ducimus harum vitae.
+                    </div>
+
+                    <div class="mt-2">
+                        <button class="btn btn-success border border-dark">Confirm</button>
+                    </div>
+                </div>
+
+                <!-- Dice Display -->
+                <div id="dice-display-container" style="display: none;">
+
+                    <div class="bg-success text-center" id="dice-background">
+                        
+                        <div id="dice-timer" class="text-light mt-1 mb-2">
+                            Get Ready
+                        </div>
+
+                        <button class="btn btn-primary" @click="immediatelyRollDice" id="dice-roll-trigger">Roll</button>
+
+                        <div id="dice-container">
+                            <div class="dot dot-six-one"></div>
+                            <div class="dot dot-six-two"></div>
+                            <div class="dot dot-six-three"></div>
+                            <div class="dot dot-six-four"></div>
+                            <div class="dot dot-six-five"></div>
+                            <div class="dot dot-six-six"></div>
+                        </div>
+
+                        <h2 id="dice-number" class="mt-2 text-light">Roll your dice now</h2>
+
+                    </div>
+
+                </div>
+
+                <!-- Price determiner -->
+                <div id="price-determiner-container" style="display: none;">
+
+                    <div id="price-determiner-title" class="text-center mt-3">
+                        <img src="images/finger-pointing.png" alt="">
+                        <span>                        
+                            <strong style="font-size: 20px;">You Determine the Price!</strong>
+                        </span>
+                    </div>
+
+                    <div id="price-display-container" class="mt-2 text-center font-weight-bold">
+                        <span id="price-determiner-currency">RM</span> 
+                        <span id="price-determiner-display">5,000,000</span>
+                    </div>
+
+                    <div id="stop-pricing-section" class="mt-3 text-center">
+                        <button class="btn btn-danger" @click="stopPricingDeterminer">Stop</button>
+                    </div>
+
+                    <div id="offer-confirmation-container" class="mt-3 text-center" style="display: none;">
+                        <button class="btn btn-success" @click="acceptOffer">Accept</button>
+                        <button class="btn btn-danger" @click="rejectOffer">Reject</button>
+                    </div>
+
+                    <div class="mt-2 text-center">
+                        *Note: You can stop the price by pressing the <strong style="font-size: 20px;">STOP</strong> button. 
+                        The price is randomly generated, once you stop the price, 
+                        it is considered the final price that 
+                        you have to pay to buy this property, company, or train station. If you didn't stop the 
+                        price within 10 seconds, the system will stop it automatically after 10 seconds.
+                        The price range falls between RM 300,000 to RM 5,000,000. Good luck.
+                    </div>
+                </div>
+
+                <!-- Players choice -->
+                <!-- <div id="player-choice-container">
+
+                    <div id="player-1" class="player-choice player-color-1">
+                        <i class="fa fa-car" aria-hidden="true"></i>
+                    </div>
+
+                    <div id="player-2" class="player-choice player-color-2">
+                        <i class="fa fa-bug" aria-hidden="true"></i>
+                    </div>
+
+                    <div id="player-3" class="player-choice player-color-3">
+                        <i class="fa fa-motorcycle" aria-hidden="true"></i>
+                    </div>
+
+                    <div id="player-4" class="player-choice player-color-4">
+                        <i class="fa fa-fighter-jet" aria-hidden="true"></i>
+                    </div>
+                </div> -->
+
+                <div id="monopoly-logo-container" class="text-center">
+                    <div id="logo-display">
+                        <img src="images/monopoly-man.png" id="monopoly-man" alt="">
+                        <div id="logo-text" class="text-white">
+                            Monopoly
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="community-chest-display">
+                    <div id="community-chest-container">
+                        <img src="images/community-chest.png" alt="">
+                    </div>
+                </div>
+
+                <div id="chance-display">
+                    <div id="chance-chest-container" class="text-center text-white">
+                        <span class="chance-question-display">?</span>
+                    </div>
+                </div>
+
+                <div class="first-map-row game-row">
+
+                    <div class="location edge-location-right" id="location-10">
+                        <div id="in-jail-text" class="font-weight-bold">
+                            In Jail
+                        </div>
+
+                        <div id="jail-img">
+                            <img src="images/in-jail.png" alt="">
+                        </div>
+
+                        <div id="just-visiting-text" class="font-weight-bold">
+                            Just Visiting
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-10-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-10-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-10-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-10-4">
+                        </div>
+                    </div>
+
+                    <div class="location" id="location-9">
+                        <div class="location-colour location-colour-3"></div>
+
+                        <div class="location-symbol">
+                            <i class="fa fa-globe" aria-hidden="true"></i>
+                        </div>
+
+                        <span class="font-weight-bold location-text">Property</span>
+
+                        <div class="player-piece-container" id="player-piece-container-9-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-9-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-9-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-9-4">
+                        </div>
+                    </div>
+
+                    <div class="location" id="location-8">
+                        <div class="location-colour location-colour-3"></div>
+
+                        <div class="location-symbol">
+                            <i class="fa fa-globe" aria-hidden="true"></i>
+                        </div>
+
+                        <span class="font-weight-bold location-text">Property</span>
+
+                        <div class="player-piece-container" id="player-piece-container-8-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-8-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-8-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-8-4">
+                        </div>
+                    </div>
+
+                    <div class="location" id="location-7">
+                        <span class="font-weight-bold location-text">Chance</span>
+
+                        <div class="location-chance-container">
+                            ?
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-7-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-7-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-7-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-7-4">
+                        </div>
+                    </div>
+
+                    <div class="location" id="location-6">
+                        <div class="location-colour location-colour-2"></div>
+                        
+                        <div class="location-symbol">
+                            <i class="fa fa-globe" aria-hidden="true"></i>
+                        </div>
+
+                        <span class="font-weight-bold location-text">Property</span>
+
+                        <div class="player-piece-container" id="player-piece-container-6-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-6-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-6-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-6-4">
+                        </div>
+                    </div>
+
+                    <div class="location" id="location-5">
+                        <div class="location-colour location-colour-2"></div>
+                        
+                        <div class="location-symbol">
+                            <i class="fa fa-globe" aria-hidden="true"></i>
+                        </div>
+
+                        <span class="font-weight-bold location-text">Property</span>
+
+                        <div class="player-piece-container" id="player-piece-container-5-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-5-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-5-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-5-4">
+                        </div>
+                    </div>
+
+                    <div class="location" id="location-4">
+
+                        <span class="font-weight-bold location-text">Community Chest</span>
+
+                        <div class="community-chest-img">
+                            <img src="images/community-chest.png" alt="">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-4-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-4-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-4-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-4-4">
+                        </div>
+                    </div>
+
+                    <div class="location" id="location-3">
+                        <div class="location-colour location-colour-1"></div>
+                        
+                        <div class="location-symbol">
+                            <i class="fa fa-globe" aria-hidden="true"></i>
+                        </div>
+
+                        <span class="font-weight-bold location-text">Property</span>
+
+                        <div class="player-piece-container" id="player-piece-container-3-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-3-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-3-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-3-4">
+                        </div>
+                    </div>
+
+                    <div class="location none-border-right" id="location-2">
+                        <div class="location-colour location-colour-1"></div>
+                        
+                        <div class="location-symbol">
+                            <i class="fa fa-globe" aria-hidden="true"></i>
+                        </div>
+
+                        <span class="font-weight-bold location-text">Property</span>
+                        
+                        <div class="player-piece-container" id="player-piece-container-2-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-2-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-2-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-2-4">
+                        </div>
+    
+
+                    </div>
+
+                    <div class="location edge-location-left none-border-right" id="location-1">
+
+                        <div id="start-text" class="font-weight-bold">
+                            <span id="collect-salary-text">Collect Salary As You Pass</span> <br>
+                            Go
+
+                            <div>
+                                <i id="start-symbol" class="fa fa-long-arrow-left" aria-hidden="true"></i>
+                            </div>
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-1-1">
+                            <!-- <div id="player-1" class="player-choice player-color-1">
+                                <i class="fa fa-car" aria-hidden="true"></i>
+                            </div> -->
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-1-2">
+                            <!-- <div id="player-2" class="player-choice player-color-2">
+                                <i class="fa fa-bug" aria-hidden="true"></i>
+                            </div> -->
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-1-3">
+                            <!-- <div id="player-3" class="player-choice player-color-3">
+                                <i class="fa fa-motorcycle" aria-hidden="true"></i>
+                            </div> -->
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-1-4">
+                            <!-- <div id="player-4" class="player-choice player-color-4">
+                                <i class="fa fa-fighter-jet" aria-hidden="true"></i>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="second-map-row game-row">
+
+                    <div class="location" id="location-14">
+                        <span class="font-weight-bold location-text">Electric Company</span>
+
+                        <div id="electric-company-img">
+                            <img src="images/electricity-bill.png" alt="">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-14-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-14-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-14-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-14-4">
+                        </div>
+                    </div>
+
+                    <div class="location" id="location-13">
+                        <span class="font-weight-bold location-text">Income Tax</span>
+
+                        <div id="income-tax-img">
+                            <img src="images/income-tax.png" alt="">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-13-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-13-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-13-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-13-4">
+                        </div>
+                    </div>
+
+                    <div class="location" id="location-12">
+                        <span class="font-weight-bold location-text">Train Station</span>
+
+                        <div class="train-station-symbol">
+                            <i class="fa fa-train" aria-hidden="true"></i>
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-12-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-12-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-12-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-12-4">
+                        </div>
+                    </div>
+
+                    <div class="location none-border-right" id="location-11">
+
+                        <div class="location-colour location-colour-4"></div>
+                        
+                        <div class="location-symbol">
+                            <i class="fa fa-globe" aria-hidden="true"></i>
+                        </div>
+
+                        <span class="font-weight-bold location-text">Property</span>
+
+                        <div class="player-piece-container" id="player-piece-container-11-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-11-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-11-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-11-4">
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="third-map-row game-row">
+                    <div class="location edge-location-right" id="location-15">
+                        <div id="free-parking-text" class="font-weight-bold">
+                            Free Parking
+
+                            <div id="parking-img">
+                                <img src="images/car-park.png" alt="">
+                            </div>
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-15-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-15-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-15-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-15-4">
+                        </div>
+                    </div>
+
+                    <div class="location" id="location-16">
+                        <div class="location-colour location-colour-3"></div>
+                        
+                        <div class="location-symbol">
+                            <i class="fa fa-globe" aria-hidden="true"></i>
+                        </div>
+
+                        <span class="font-weight-bold location-text">Property</span>
+
+                        <div class="player-piece-container" id="player-piece-container-16-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-16-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-16-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-16-4">
+                        </div>
+                    </div>
+
+                    <div class="location" id="location-17">
+                        <div class="location-colour location-colour-3"></div>
+                        
+                        <div class="location-symbol">
+                            <i class="fa fa-globe" aria-hidden="true"></i>
+                        </div>
+
+                        <span class="font-weight-bold location-text">Property</span>
+
+                        <div class="player-piece-container" id="player-piece-container-17-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-17-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-17-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-17-4">
+                        </div>
+                    </div>
+
+                    <div class="location" id="location-18">
+                        <span class="font-weight-bold location-text">Community Chest</span>
+
+                        <div class="community-chest-img">
+                            <img src="images/community-chest.png" alt="">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-18-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-18-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-18-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-18-4">
+                        </div>
+                    </div>
+
+                    <div class="location" id="location-19">
+                        <div class="location-colour location-colour-2"></div>
+                        
+                        <div class="location-symbol">
+                            <i class="fa fa-globe" aria-hidden="true"></i>
+                        </div>
+
+                        <span class="font-weight-bold location-text">Property</span>
+
+                        <div class="player-piece-container" id="player-piece-container-19-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-19-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-19-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-19-4">
+                        </div>
+                    </div>
+
+                    <div class="location" id="location-20">
+                        <div class="location-colour location-colour-2"></div>
+
+                        <div class="location-symbol">
+                            <i class="fa fa-globe" aria-hidden="true"></i>
+                        </div>
+
+                        <span class="font-weight-bold location-text">Property</span>
+
+                        <div class="player-piece-container" id="player-piece-container-20-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-20-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-20-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-20-4">
+                        </div>
+                    </div>
+
+                    <div class="location" id="location-21">
+                        <span class="font-weight-bold location-text">Chance</span>
+
+                        <div class="location-chance-container">
+                            ?
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-21-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-21-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-21-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-21-4">
+                        </div>
+                    </div>
+
+                    <div class="location" id="location-22">
+                        <div class="location-colour location-colour-1"></div>
+
+                        <div class="location-symbol">
+                            <i class="fa fa-globe" aria-hidden="true"></i>
+                        </div>
+
+                        <span class="font-weight-bold location-text">Property</span>
+
+                        <div class="player-piece-container" id="player-piece-container-22-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-22-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-22-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-22-4">
+                        </div>
+                    </div>
+
+                    <div class="location none-border-right" id="location-23">
+                        <div class="location-colour location-colour-1"></div>
+
+                        <div class="location-symbol">
+                            <i class="fa fa-globe" aria-hidden="true"></i>
+                        </div>
+
+                        <span class="font-weight-bold location-text">Property</span>
+
+                        <div class="player-piece-container" id="player-piece-container-23-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-23-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-23-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-23-4">
+                        </div>
+                    </div>
+
+                    <div class="location edge-location-left none-border-right" id="location-24">
+
+                        <div id="go-to-jail-text" class="font-weight-bold">
+                            Go To Jail
+                        </div>
+
+                        <div id="police-img">
+                            <img src="images/police.png" alt="">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-24-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-24-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-24-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-24-4">
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="fourth-map-row game-row">
+
+                    <div class="location" id="location-28">
+                        <div class="location-colour location-colour-4"></div>
+
+                        <div class="location-symbol">
+                            <i class="fa fa-globe" aria-hidden="true"></i>
+                        </div>
+
+                        <span class="font-weight-bold location-text">Property</span>
+
+                        <div class="player-piece-container" id="player-piece-container-28-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-28-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-28-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-28-4">
+                        </div>
+                    </div>
+
+                    <div class="location" id="location-27">
+                        <span class="font-weight-bold location-text">Train Station</span>
+
+                        <div class="train-station-symbol">
+                            <i class="fa fa-train" aria-hidden="true"></i>
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-27-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-27-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-27-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-27-4">
+                        </div>
+                    </div>
+
+                    <div class="location" id="location-26">
+                        <span class="font-weight-bold location-text">Luxury Tax</span>
+
+                        <div id="luxury-tax-img">
+                            <img src="images/luxury-tax.png" alt="">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-26-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-26-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-26-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-26-4">
+                        </div>
+                    </div>
+
+                    <div class="location none-border-right" id="location-25">
+                        <span class="font-weight-bold location-text">Water Works</span>
+
+                        <div id="water-works-img">
+                            <img src="images/water-bill.png" alt="">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-25-1">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-25-2">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-25-3">
+                        </div>
+
+                        <div class="player-piece-container" id="player-piece-container-25-4">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div hidden>
+            <form id="info" @submit.prevent="save">
+                <div class="form-group">
+                    <p>Owned By</p>
+                    <input id="owner" v-model.trim="label" @keydown.esc="cancel" readonly>
+                </div>
+                <div class="form-group">
+                    <p>Rental Price (RM)</p>
+                    <input id="rental" v-model.trim="rentalPrice" @keydown.esc="cancel" readonly>
+                </div>
+                <div class="form-group">
+                    <p>Houses</p>
+                    <input id="housesType" v-model.trim="rentailType" @keydown.esc="cancel" readonly>
+                    <button id="addHouse" class="btn btn-secondary" @click.prevent="addHouse">+</button>
+                    <input id="housesCount" v-model.trim="housesTotal" @keydown.esc="cancel" readonly hidden>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-success" id="confirmBtn">Confirm</button>
+                    <button class="btn btn-danger" @click.prevent="cancel">Close</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="game-controller">
+            <div id="game-tab">
+                <nav id="game-tab-container">
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                      <a class="nav-link active text-dark" id="nav-player-tab" data-toggle="tab" href="#nav-player" role="tab" aria-controls="nav-home" aria-selected="true">Players</a>
+                      <a class="nav-link text-dark" id="nav-chat-tab" data-toggle="tab" href="#nav-chat" role="tab" aria-controls="nav-profile" aria-selected="false">Chat</a>
+                      <a class="nav-link text-dark" id="nav-activty-log-tab" data-toggle="tab" href="#nav-activity-log" role="tab" aria-controls="nav-contact" aria-selected="false">Activity Log</a>
+                    </div>
+                </nav>
+
+                <div class="tab-content bg-success" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="nav-player" role="tabpanel" aria-labelledby="nav-player-tab">
+                        <div class="player-display" id="player-display-list">
+
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="nav-chat" role="tabpanel" aria-labelledby="nav-chat-tab">
+                        <div id="chat-display-container">
+                            <div class="mt-2 bg-light chat-message-container">
+
+                                <div class="message-sender">
+                                    <i class="fa fa-bug player-color-2" aria-hidden="true"></i> 
+                                    Player 2 :
+                                </div>
+
+                                <span class="chat-message-content">
+                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio dolores expedita eligendi 
+                                    reiciendis doloribus repellendus quisquam ipsa voluptatem sapiente, 
+                                    debitis excepturi amet explicabo, labore odio quidem, ratione aliquid consequatur quaerat.
+                                </span>
+
+                                <div class="text-right text-muted message-sent-time">
+                                    11:59 pm
+                                </div>
+                            </div>
+
+                            <div class="mt-2 bg-light chat-message-container">
+
+                                <div class="message-sender">
+                                    <i class="fa fa-car player-color-1" aria-hidden="true"></i>
+                                    Player 1 :
+                                </div>
+
+                                <span class="chat-message-content">
+                                   Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                                   Quae laudantium sapiente similique non doloremque facere!
+                                </span>
+
+                                <div class="text-right text-muted message-sent-time">
+                                    11:59 pm
+                                </div>
+                            </div>
+
+                            <div class="mt-2 bg-light chat-message-container">
+
+                                <div class="message-sender">
+                                    <i class="fa fa-motorcycle player-color-3" aria-hidden="true"></i>
+                                    Player 3 :
+                                </div>
+
+                                <span class="chat-message-content">
+                                   Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                                   Quae laudantium sapiente similique non doloremque facere!
+                                </span>
+
+                                <div class="text-right text-muted message-sent-time">
+                                    11:59 pm
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="chat-input-container">
+                            <form @submit.prevent="sent">
+                                <input type="text" 
+                                    class="form-control" 
+                                    placeholder="Enter message here"
+                                    id="chat-input"
+                                    v-model="message"
+                                    v-focus
+                                    ref="message">
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="nav-activity-log" role="tabpanel" aria-labelledby="nav-activity-log-tab">
+                        
+                        <div class="mt-2 bg-light log-message-container">
+
+                            <span class="log-message-content">
+                                John Doe threw the dice and he got a 6 out of it!
+                            </span>
+
+                            <div class="text-right text-muted log-sent-time">
+                                11:59 pm
+                            </div>
+                        </div>
+
+                        <div class="mt-2 bg-light log-message-container">
+
+                            <span class="log-message-content">
+                                John Doe threw the dice and got a 6 out of it!
+                            </span>
+
+                            <div class="text-right text-muted log-sent-time">
+                                11:59 pm
+                            </div>
+                        </div>
+
+                        <div class="mt-2 bg-light log-message-container">
+
+                            <span class="log-message-content">
+                                John Doe threw the dice and got a 6 out of it!
+                            </span>
+
+                            <div class="text-right text-muted log-sent-time">
+                                11:59 pm
+                            </div>
+                        </div>
+
+                        <div class="mt-2 bg-light log-message-container">
+
+                            <span class="log-message-content">
+                                John Doe threw the dice and got a 6 out of it!
+                            </span>
+
+                            <div class="text-right text-muted log-sent-time">
+                                11:59 pm
+                            </div>
+                        </div>
+
+                        <div class="mt-2 bg-light log-message-container">
+
+                            <span class="log-message-content">
+                                John Doe threw the dice and got a 6 out of it!
+                            </span>
+
+                            <div class="text-right text-muted log-sent-time">
+                                11:59 pm
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-1 player-action-container">
+
+                <div class="row player-action-row">
+                    <div class="col-12 player-action-col" id="ready-section" style="display: none;">
+                        <button class="btn btn-success player-action-btn"  id="readyBtn" @click="getReady">Get Ready</button>
+                    </div>
+
+                    <div class="col-12 player-action-col" id="start-section" style="display: none;">
+                        <button class="btn btn-info player-action-btn" id="startBtn" @click="startGame">Start Game</button>
+                    </div>
+
+                    <div class="col-12 player-action-col" id="cancel-ready-section" style="display: none;">
+                        <button class="btn btn-warning player-action-btn"  @click="cancelReady">Cancel Ready</button>
+                    </div>
+    
+                    <!-- <div class="col-12 mt-2 player-action-col">
+                        <button class="btn btn-this.info player-action-btn" @click="displayDiceContainer">Throw Dice</button>
+                    </div> -->
+
+                    <div class="col-12 mt-2 player-action-col">
+                        <button class="btn btn-primary player-action-btn">Sell items</i>
+                        </button>
+                    </div>
+
+                    <div class="col-12 mt-2 player-action-col">
+                        <button class="btn btn-danger player-action-btn" @click="$router.push('/home')">Exit Game</button>
+                    </div>
+
+                    <div class="col-12 d-flex mt-2 player-action-col">
+                        
+                        <span id="volume-icon" onclick="muteVolume()">
+                            <i class="fa fa-volume-up" aria-hidden="true"></i>
+                        </span>
+                        
+                        <input type="range" min="0" max="100" id="volume-adjust-input" value="100" oninput="adjustVolume()">
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- Music -->
+        <audio src="audio/background-music.mp3" loop id="background-music"></audio>
+        <audio src="audio/pieceSoundEffect.mp3" id="moving-piece-sound-effect"></audio>
+        <script src="bundle.js"></script>
+    </div>
+</body>
+</html>

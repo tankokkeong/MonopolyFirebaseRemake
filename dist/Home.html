@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+
+    <!-- JQuery -->
+    <script src="https://kenny-framework.netlify.app/jQuery-v3.5.1.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://kenny-framework.netlify.app/bootstrap-v4.5.3.css">
+    <script src="https://kenny-framework.netlify.app/bootstrap-v4.5.3.js"></script>
+        
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://kenny-framework.netlify.app/font-awesome-4.7.0.css">
+    <script src="https://kenny-framework.netlify.app/font-awesome-4.7.0.js"></script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/images/monopoly-man.png">
+
+    <link rel="stylesheet" href="style/app.css">
+</head>
+<body>
+    <div class="page-container">
+        <div class="home-container" >
+            <div class="header-container">
+                <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+                    <a class="navbar-brand" href="#"><img src="images/monopoly-man.png" height="40px" width="40px"> Monopoly Home Page</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav mr-auto">
+                        
+                        </ul>
+                        <form class="form-inline my-2 my-lg-0">
+                            <ul class="navbar-nav mr-auto">
+                                <li class="nav-item">
+                                    <p class="nav-link">Welcome <b id="name"></b></p>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="logout" onclick="logout()" style="cursor: pointer;">Logout</a>
+                                </li>
+                            </ul>            
+                        </form>
+                    </div>
+                </nav> 
+            </div>
+    
+            <ul class="homepage-container nav bg-white mt-3">
+                <li class="nav-item">
+                  <a class="nav-link active" href="#/home">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#/rules">Rules</a>
+                </li>
+            </ul>
+    
+            <div class="table-container mt-3 bg-grey">
+                <div class="table-display-container">
+                    <h3>Select a room to join</h3>
+                    <p class="mt-3">
+                        <button class="btn btn-success float-right" @click="createGame()">Create Room</button>
+                    </p>
+                    <div class="game-room-container mt-5">
+                        <h5 class="mt-3 ml-3">
+                            <span id="total-room"> {{ totalRoom }}</span> room(s)
+                        </h5>
+                        <table class="table table-bordered mt-5 table-dark">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Room ID</th>
+                                    <th scope="col">Room Status</th>
+                                    <th scope="col">No Of Players</th>
+                                    <th scope="col">Join Game</th>
+                                </tr>
+                            </thead>
+                            <tbody id="room-table">
+                                
+                            </tbody>
+                        </table>
+                    </div>
+    
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
