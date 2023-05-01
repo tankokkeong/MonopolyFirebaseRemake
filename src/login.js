@@ -21,3 +21,4 @@ function writeUserData() {
         profile_picture : "imageUrl"
     });
 }
+

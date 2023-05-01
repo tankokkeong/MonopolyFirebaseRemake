@@ -4,9 +4,109 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monopoly Firebase</title>
+    <title>Login</title>
+
+    <!-- JQuery -->
+    <script src="https://kenny-framework.netlify.app/jQuery-v3.5.1.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://kenny-framework.netlify.app/bootstrap-v4.5.3.css">
+    <script src="https://kenny-framework.netlify.app/bootstrap-v4.5.3.js"></script>
+        
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://kenny-framework.netlify.app/font-awesome-4.7.0.css">
+    <script src="https://kenny-framework.netlify.app/font-awesome-4.7.0.js"></script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/images/monopoly-man.png">
+
+    <link rel="stylesheet" href="style/login.css">
+    <link rel="stylesheet" href="style/app.css">
 </head>
 <body>
+    <div class="page-container">
+        <div class="login-page-container">
+            <div class="header-container">
+                <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+                    <a class="navbar-brand" href="#"><img src="images/monopoly-man.png" height="40px" width="40px"> Monopoly</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav mr-auto">
+                        
+                        </ul>
+                        <form class="form-inline my-2 my-lg-0">
+                            <ul class="navbar-nav mr-auto">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#/login">Login</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#/register">Sign Up</a>
+                                    <!-- <a class="nav-link" href="#/login" hidden>Logout</a> -->
+                                </li>
+                            </ul>            
+                        </form>
+                    </div>
+                </nav>
+            </div>
+    
+            <div class="login-container">
+                <div class="login-body text-center">
+                        <div class="login-form border border-light shadow-lg p-3 mb-5 bg-white rounded">
+                            
+                            <div class="mt-3 mb-3 text-secondary text-center text-dark">
+                                <img src="images/monopoly-biglogo.jpg" width="300px" height="90px">
+                            </div>
+        
+                            <div class="mt-3 text-center mb-3">
+                                <h1 class="text-dark">Login</h1>
+                            </div>
+                            <form class="login-input mt-5" @submit.prevent="submit">
+                                <div class="form-group">
+                                  <input type="email" 
+                                        class="form-control" 
+                                        placeholder="Your Email"
+                                        v-model="email"
+                                        required
+                                        v-focus
+                                        ref="email">
+                                </div>
+                                <div class="form-group">
+                                  <input type="password" 
+                                        class="form-control" 
+                                        placeholder="Your Password"
+                                        v-model.trim="password"
+                                        required
+                                        minlength="6"
+                                        maxlength="50">
+                                </div>
+                                
+                                <div class="mt-5 text-center">
+                                    <button id="login"  class="btn btn-pistachio"><i class="fa fa-motorcycle motorcycle" aria-hidden="true"></i>  Login</button>
+                                    <button class="btn btn-danger"   @click.prevent="reset"><i class="fa fa-refresh"></i> Reset</button>
+                                </div>
+    
+                                <div class="loader text-center mt-3" style="display: none;">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+        
+                                
+                                <div class="createAcc text-center mt-3 mb-3">
+                                    <a href="#/register">Do not have an account? Click Here</a>
+                                </div>
+    
+                            </form>
+                        </div>
+        
+                    </div>   
+            </div>
+        </div>
+    </div>
+
     <script src="bundle.js"></script>
 </body>
 </html>
