@@ -1,0 +1,26 @@
+body{
+    background-image: url('../images/monopoly-background.jpg');
+}
+
+.signup-body{
+    padding: 3%;
+}
+
+.signup-form{
+    background-color: white;
+    padding:3%;
+}
+
+.signup-input{
+    padding-left: 20%;
+    padding-right: 20%;
+    margin: 20px 0;
+}
+
+.btn-pistachio{
+    background-color: #8FBC72!important;
+}
+
+.motorcycle {
+    color: purple;
+}

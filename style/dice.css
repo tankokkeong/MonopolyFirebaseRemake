@@ -1,0 +1,135 @@
+#dice-container{
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 90px;
+    height: 90px;
+    border-radius: 10px;
+    background-color: white;
+    margin-top: 20px;;
+}
+
+.dot{
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 20px;
+    background-color: #f25f5c;
+    box-shadow: inset 2px 2px #d90429;
+}
+
+.dot-one{
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* two in dice */
+
+.dot-two-one{
+    top: 10px;
+    left: 10px;
+}
+
+.dot-two-two{
+    bottom: 10px;
+    right: 10px;
+}
+
+/* three in dice */
+.dot-three-one{
+    top: 10px;
+    left: 10px;
+}
+
+.dot-three-two{
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.dot-three-three{
+    bottom: 10px;
+    right: 10px;
+}
+
+/* four in a dice */
+.dot-four-one{
+    top: 10px;
+    left: 10px;
+}
+
+.dot-four-two{
+    top: 10px;
+    right: 10px;
+}
+
+.dot-four-three{
+    bottom: 10px;
+    left: 10px;
+}
+
+.dot-four-four{
+    bottom: 10px;
+    right: 10px;
+}
+
+/* Five in dice */
+.dot-five-one{
+    top: 10px;
+    left: 10px;
+}
+
+.dot-five-two{
+    top: 10px;
+    right: 10px;
+}
+
+.dot-five-three{
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.dot-five-four{
+    bottom: 10px;
+    left: 10px;
+}
+
+.dot-five-five{
+    bottom: 10px;
+    right: 10px;
+}
+
+/* six in dice */
+.dot-six-one{
+    top: 10px;
+    left: 10px;
+}
+
+.dot-six-two{
+    top: 10px;
+    right: 10px;
+}
+
+.dot-six-three{
+    top: 50%;
+    left: 10px;
+    transform: translate(0, -50%);
+}
+
+.dot-six-four{
+    top: 50%;
+    right: 10px;
+    transform: translate(0, -50%);
+}
+
+.dot-six-five{
+    bottom: 10px;
+    left: 10px;
+}
+
+.dot-six-six{
+    bottom: 10px;
+    right: 10px;
+}
