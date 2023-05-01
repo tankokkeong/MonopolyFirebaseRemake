@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, set } from "firebase/database";
+import { getAuth, signInWithEmailAndPassword  } from "firebase/auth";
+import { setCookie, displayCustomMessage, route } from '../dist/script/module-helper';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAOaIjem-aPiQrmxn4K6Rnm-X9UcRg9q9c",
@@ -11,14 +12,43 @@ const firebaseConfig = {
     appId: "1:654792555384:web:e9099310e35dce591aa68d"
 };
 
-initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
-function writeUserData() {
-    const db = getDatabase();
-    set(ref(db, 'users/' + "sdasda"), {
-        username: "name",
-        email: "email",
-        profile_picture : "imageUrl"
-    });
+// Initialize Firebase Authentication and get a reference to the service
+const auth = getAuth(app);
+
+const LoginBtn = document.getElementById("login-btn");
+LoginBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    var emailInput = document.getElementById("user-email").value;
+    var passwordInput = document.getElementById("user-password").value;
+    Login(emailInput, passwordInput);
+});
+
+function Login(email, password) {
+    //Remove previous message
+    displayCustomMessage("login-message", "");
+
+    if(email.trim().length === 0 || password.length === 0){
+        displayCustomMessage("login-message", "You cannot leave empty field(s)!");
+    }
+    else{
+        $(".loader").show();
+        signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            // Signed in 
+            const userID = userCredential.user.uid;
+            setCookie("AuathenticatedUID", userID, 7);
+            route("Home");
+        })
+        .catch((error) => {
+            $('.loader').hide();
+            displayCustomMessage("login-message", "Invalid username or password!");
+
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log("Login Failed")
+        });
+    }
 }
 

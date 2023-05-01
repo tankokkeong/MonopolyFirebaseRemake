@@ -9,6 +9,12 @@ a{
     cursor: pointer;
 }
 
+.custom-link{
+    text-decoration: underline;
+    cursor: pointer;
+    color: #73a9ff;
+}
+
 .page-container{
     padding: 40px;
 }
