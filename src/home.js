@@ -42,6 +42,7 @@ onAuthStateChanged(auth, (user) => {
             onValue(RoomRef, (snapshot) => {
                 //Empty the previous html tag
                 roomDisplay.innerHTML = "";
+                numberOfRoom = 0;
 
                 snapshot.forEach((childSnapshot) => {
                     const data = childSnapshot.val();
@@ -60,7 +61,7 @@ onAuthStateChanged(auth, (user) => {
                     `<tr>
                         <td>` + childSnapshot.key + `</td>
                         <td class="text-warning">` + childSnapshot.val().status + `</td>
-                        <td>` + childSnapshot.val().numOfPlayer + `/4</td>` + 
+                        <td>` + childSnapshot.val().numOfPlayer.currentInRoom + `/4</td>` + 
                         roomAction
                         +
                     `</tr>`;
@@ -84,7 +85,8 @@ LogoutAction.addEventListener("click", (e) => {
     signOut(auth).then(() => {
         setCookie("AuathenticatedUID", "", -7);
         route("Index");
-    }).catch((error) => {
+    })
+    .catch((error) => {
         // An error happened.
         console.log(error)
     });
@@ -92,13 +94,29 @@ LogoutAction.addEventListener("click", (e) => {
 
 const CreateRoomBtn = document.getElementById("create-room-btn");
 CreateRoomBtn.addEventListener("click", (e) => {
-    set(ref(db, 'rooms/' + crypto.randomUUID()), {
+    const roomID = crypto.randomUUID()
+    set(ref(db, 'rooms/' + roomID), {
         createdBy: userID,
         createdName : username,
         createdAt: new Date(),
-        numOfPlayer: 1,
+        numOfPlayer: {
+            player1: userID,
+            player2: "",
+            player3: "",
+            player4: "",
+            currentInRoom: 1
+        },
         status : "Waiting",
         CurrentDiceNumber : 0,
         CurrentPlayerSequence : 1
+    })
+    .then(() => {
+        route("Room", roomID);
+    })
+    .catch((error) => {
+        // An error happened.
+        console.log(error)
     });
 });
+
+const JoinRoomBtn = document.getElementById("")
