@@ -31,49 +31,50 @@ onAuthStateChanged(auth, (user) => {
     else{
         userID = user.uid;
         get(child(dbRef, `users/${userID}`)).then((snapshot) => {
-        if (snapshot.exists()) {
-            username = snapshot.val().username;
+            if (snapshot.exists()) {
+                username = snapshot.val().username;
 
-            //Display welcome user
-            WelcomeDisplay.innerHTML = username
+                //Display welcome user
+                WelcomeDisplay.innerHTML = username
 
-            //Display Room
-            const RoomRef = ref(db, 'rooms/');
-            onValue(RoomRef, (snapshot) => {
-                //Empty the previous html tag
-                roomDisplay.innerHTML = "";
-                numberOfRoom = 0;
+                //Display Room
+                const RoomRef = ref(db, 'rooms/');
+                onValue(RoomRef, (snapshot) => {
+                    //Empty the previous html tag
+                    roomDisplay.innerHTML = "";
+                    numberOfRoom = 0;
 
-                snapshot.forEach((childSnapshot) => {
-                    const data = childSnapshot.val();
-                    numberOfRoom++;
-                    console.log(data)
-                    const roomAction =  childSnapshot.val().status == "Start" ? 
-                    `<td style="position: relative">
-                        <span class="text-danger">Not Available</span>
-                    </td>`
-                    :
-                    `<td style="position: relative">
-                        <a class="btn btn-primary" onclick="route('Room','` +  childSnapshot.key + `')">Join Game</button>                    
-                    </td>`;
+                    snapshot.forEach((childSnapshot) => {
+                        const data = childSnapshot.val();
+                        numberOfRoom++;
+                        console.log(data)
+                        const roomAction =  childSnapshot.val().status == "Start" ? 
+                        `<td style="position: relative">
+                            <span class="text-danger">Not Available</span>
+                        </td>`
+                        :
+                        `<td style="position: relative">
+                            <a class="btn btn-primary" onclick="route('Room','room=` +  childSnapshot.key + `')">Join Game</button>                    
+                        </td>`;
 
-                    roomDisplay.innerHTML = roomDisplay.innerHTML+
-                    `<tr>
-                        <td>` + childSnapshot.key + `</td>
-                        <td class="text-warning">` + childSnapshot.val().status + `</td>
-                        <td>` + childSnapshot.val().numOfPlayer.currentInRoom + `/4</td>` + 
-                        roomAction
-                        +
-                    `</tr>`;
+                        roomDisplay.innerHTML = roomDisplay.innerHTML+
+                        `<tr>
+                            <td>` + childSnapshot.key + `</td>
+                            <td class="text-warning">` + childSnapshot.val().status + `</td>
+                            <td>` + childSnapshot.val().numOfPlayer.currentInRoom + `/4</td>` + 
+                            roomAction
+                            +
+                        `</tr>`;
+                    });
+
+                    //Display number of room
+                    numberOfRoomDisplay.innerHTML = numberOfRoom + " room(s)";
                 });
 
-                //Display number of room
-                numberOfRoomDisplay.innerHTML = numberOfRoom + " room(s)";
-            });
-
-        } else {
-            console.log("Invalid User");
-        }
+            } 
+            else {
+                console.log("Invalid User");
+            }
         }).catch((error) => {
             console.error(error);
         });

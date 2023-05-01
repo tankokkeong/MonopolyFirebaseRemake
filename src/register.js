@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, set } from "firebase/database";
-import { displayCustomMessage, route } from '../dist/script/module-helper';
+import { displayCustomMessage, route, setCookie } from '../dist/script/module-helper';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAOaIjem-aPiQrmxn4K6Rnm-X9UcRg9q9c",
@@ -18,10 +18,11 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
 const db = getDatabase();
+var registering = false;
 
 //Check Is Authenticated
 onAuthStateChanged(auth, (user) => {
-    if (user) {
+    if (user && !registering) {
         route("Home");
     } 
 });
@@ -37,6 +38,8 @@ RegisterBtn.addEventListener("click", (e) => {
 
 function CreateNewUser(email, password, username){
 
+    registering = true;
+
     //Remove previous message
     displayCustomMessage("register-message", "");
 
@@ -49,6 +52,7 @@ function CreateNewUser(email, password, username){
         .then((userCredential) => {
             // Signed in 
             const userID = userCredential.user.uid;
+            setCookie("AuathenticatedUID", userID, 7);
 
             set(ref(db, 'users/' + userID), {
                 username: username,
