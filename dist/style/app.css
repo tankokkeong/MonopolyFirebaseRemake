@@ -15,6 +15,11 @@ a{
     color: #73a9ff;
 }
 
+.custom-nav-link:hover{
+    color: black;
+    font-weight: bold;
+}
+
 .page-container{
     padding: 40px;
 }

@@ -40,7 +40,9 @@
                         <form class="form-inline my-2 my-lg-0">
                             <ul class="navbar-nav mr-auto">
                                 <li class="nav-item">
-                                    <span class="nav-link text-light">Welcome</span>
+                                    <span class="nav-link text-light">Welcome 
+                                        <span class="font-weight-bold" id="welcome-display"></span>
+                                    </span>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-light" id="logout-action">Logout</a>
@@ -53,10 +55,10 @@
     
             <ul class="homepage-container nav bg-white mt-3">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#/home">Home</a>
+                    <a class="nav-link custom-nav-link" onclick="route('Home')">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#/rules">Rules</a>
+                    <a class="nav-link custom-nav-link" onclick="route('Rules')">Rules</a>
                 </li>
             </ul>
     

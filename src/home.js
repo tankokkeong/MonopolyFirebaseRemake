@@ -19,6 +19,7 @@ const dbRef = ref(getDatabase());
 const auth = getAuth();
 const numberOfRoomDisplay = document.getElementById("total-room");
 const roomDisplay = document.getElementById("room-table");
+const WelcomeDisplay = document.getElementById("welcome-display");
 var numberOfRoom = 0;
 var userID;
 var username;
@@ -32,6 +33,9 @@ onAuthStateChanged(auth, (user) => {
         get(child(dbRef, `users/${userID}`)).then((snapshot) => {
         if (snapshot.exists()) {
             username = snapshot.val().username;
+
+            //Display welcome user
+            WelcomeDisplay.innerHTML = username
 
             //Display Room
             const RoomRef = ref(db, 'rooms/');
