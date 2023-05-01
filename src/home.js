@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { getDatabase, ref, set } from "firebase/database";
+import { getDatabase, ref, set, child, get } from "firebase/database";
 import { route } from '../dist/script/module-helper';
 
 const firebaseConfig = {
@@ -14,12 +14,28 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
+const db = getDatabase();
+const dbRef = ref(getDatabase());
 const auth = getAuth();
+var userID;
+var username;
+
 onAuthStateChanged(auth, (user) => {
     if (!user) {
         route("Index");
     } 
+    else{
+        userID = user.uid;
+        get(child(dbRef, `users/${userID}`)).then((snapshot) => {
+        if (snapshot.exists()) {
+            username = snapshot.val().username;
+        } else {
+            console.log("Invalid User");
+        }
+        }).catch((error) => {
+            console.error(error);
+        });
+    }
 });
 
 const LogoutAction = document.getElementById("logout-action");
@@ -30,5 +46,17 @@ LogoutAction.addEventListener("click", (e) => {
     }).catch((error) => {
         // An error happened.
         console.log(error)
+    });
+});
+
+const CreateRoomBtn = document.getElementById("create-room-btn");
+CreateRoomBtn.addEventListener("click", (e) => {
+    set(ref(db, 'rooms/' + crypto.randomUUID()), {
+        createdBy: userID,
+        createdName : username,
+        createdAt: new Date(),
+        status : "Waiting",
+        CurrentDiceNumber : 0,
+        CurrentPlayerSequence : 1
     });
 });
