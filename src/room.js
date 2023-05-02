@@ -42,6 +42,9 @@ const playerPieceOnBoard =
     </div>`
 ];
 
+const StartBtn = document.getElementById("startBtn");
+const ReadyBtn = document.getElementById("readyBtn");
+
 onAuthStateChanged(auth, (user) => {
     if (!user) {
         route("Index");
@@ -59,6 +62,8 @@ onAuthStateChanged(auth, (user) => {
                     //Display player List
                     onValue(ref(db, "Connection/" + roomID + "/"), (snapshot) => {
                         const playerListContainer = document.getElementById("player-display-list");
+                        var playerInRoom = 0;
+                        var readyUser = 0;
 
                         //Remove the previous html tag
                         playerListContainer.innerHTML = "";
@@ -70,7 +75,19 @@ onAuthStateChanged(auth, (user) => {
                             <i class="fa fa-user-circle" aria-hidden="true"></i>
                             </span>` : "";
 
+                            const ready = childSnapshot.val().hasOwnProperty("gameStatus") ? 
+                            `<span id="player-` + childSnapshot.key + `-ready-state" class="player-ready-state">
+                            <i class="fa fa-check" aria-hidden="true"></i>
+                            </span>` : "";
+
                             if(childSnapshot.val().status == "Online"){
+
+                                if(childSnapshot.val().hasOwnProperty("gameStatus")){
+                                    readyUser++;
+                                }
+
+                                playerInRoom++;
+
                                 playerListContainer.innerHTML += 
                                 `<div class="player-display-container bg-light text-dark mt-2">
                                     <div class="player-name-container">` +  
@@ -79,14 +96,11 @@ onAuthStateChanged(auth, (user) => {
                                         <span id="player-` + childSnapshot.key +  `-piece"></span>
                                         <span id="player-` + childSnapshot.key +  `-name">
                                             ` + childSnapshot.val().name + `
-                                        </span>` 
+                                        </span>`+
+                                        host + 
 
-                                        + host + 
-
-                                        `<span id="player-` + childSnapshot.key + `-ready-state" class="player-ready-state" style="display: none;">
-                                            <i class="fa fa-check" aria-hidden="true"></i>
-                                        </span>
-                                    </div>
+                                        ready +
+                                    `</div>
 
                                     <div id="player-balance-container">
                                         <i class="fa fa-money" aria-hidden="true"></i> 
@@ -105,9 +119,18 @@ onAuthStateChanged(auth, (user) => {
                                         <span class="text-info" id="player-`+ childSnapshot.key + `-property">0</span>
                                     </div>
                                 </div>`; 
+
                             }
                             
                         });
+
+                        console.log("pLAYER: ", playerInRoom, " Ready: ", readyUser)
+                        if(playerInRoom - 1 == readyUser){
+                            StartBtn.disabled = false;
+                        }
+                        else{
+                            StartBtn.disabled = true;
+                        }
                     });
 
                     const connectionRef = ref(db, "Connection/" + roomID + "/" + userID);
@@ -140,10 +163,17 @@ onAuthStateChanged(auth, (user) => {
 function JoinRoom(uid){
     get(child(dbRef, "Connection/" + roomID)).then((snapshot) => {
         var currentInRoom = 0;
+        var readyCount = 0;
 
         snapshot.forEach(childSnap => {
             if(childSnap.val().status == "Online"){
                 currentInRoom++;
+            }
+
+            if(childSnap.val().hasOwnProperty("gameStatus")){
+                if(child.val().gameStatus == "Ready"){
+                    readyCount++;
+                }
             }
         });
 
@@ -157,6 +187,9 @@ function JoinRoom(uid){
                 host: true,
                 pieceIndex: currentInRoom
             }
+
+            //Show start button
+            StartBtn.style.display = "";
         }
         else
         {
@@ -165,6 +198,9 @@ function JoinRoom(uid){
                 name: username,
                 pieceIndex: currentInRoom
             }
+
+            //Show ready button
+            ReadyBtn.style.display = "";
         }
 
         //If the room is not full
@@ -198,3 +234,12 @@ function LeaveRoom(){
         route("Home");
     });
 }
+
+ReadyBtn.addEventListener("click", (e) => {
+    //Start Action
+    const updates = {};
+    updates["Connection/" + roomID + "/" + userID + "/" + "gameStatus"] = "Ready";
+    update(ref(db), updates).then((message) => {
+        console.log("I am ready!", message);
+    });
+});
