@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getDatabase, ref, set, get, child, update, onDisconnect, onValue } from "firebase/database";
+import { getDatabase, ref, set, get, child, update, onDisconnect, onValue, remove } from "firebase/database";
 import { route, getUrlParams, getCookie } from '../dist/script/module-helper';
 
 const firebaseConfig = {
@@ -20,12 +20,6 @@ const dbRef = ref(getDatabase());
 var roomID;
 var userID;
 var username;
-const connectionRef = ref(db, "Connection/" + getCookie("AuathenticatedUID"));
-
-//If disconnected
-onDisconnect(connectionRef).set({
-    online: false
-});
 
 onAuthStateChanged(auth, (user) => {
     if (!user) {
@@ -41,10 +35,17 @@ onAuthStateChanged(auth, (user) => {
                     route("Home");
                 }
                 else{
+                    const connectionRef = ref(db, "Connection/" + roomID + "/" + userID);
+
+                    //If disconnected
+                    onDisconnect(connectionRef).set({
+                        status: "Offline"
+                    });
+
                     //Check room exists
                     get(child(dbRef, `rooms/${roomID}`)).then((snapshot) => {
                         if(snapshot.exists()){
-                            JoinRoom(snapshot.val().numOfPlayer);
+                            JoinRoom(userID);
                         }
                         else{
                             route("Home");
@@ -61,54 +62,45 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-function JoinRoom(numOfPlayer){
-    
-    if(!alreadyInRoom(numOfPlayer)){
-        if(numOfPlayer.player1 == ""){
-            numOfPlayer.player1 = userID;
-            numOfPlayer.currentInRoom += 1;
+function JoinRoom(uid){
+    get(child(dbRef, "Connection/" + roomID)).then((snapshot) => {
+        var currentInRoom = 0;
+
+        snapshot.forEach(childSnap => {
+            if(childSnap.val().status == "Online"){
+                currentInRoom++;
+            }
+        });
+
+        //If the room is not full
+        if(currentInRoom < 1){
+            set(ref(db, "Connection/" + roomID + "/" + uid), {
+                status : "Online"
+            })
+            .then(() => {
+                console.log("Successfully join room")
+            });
         }
-        else if(numOfPlayer.player2 === "")
-        {
-            numOfPlayer.player2 = userID;
-            numOfPlayer.currentInRoom += 1;
+        else{
+            route("Home");
         }
-        else if(numOfPlayer.player3 === "")
-        {
-            numOfPlayer.player3 = userID;
-            numOfPlayer.currentInRoom += 1;
-        }
-        else if(numOfPlayer.player4 === "")
-        {
-            numOfPlayer.player4 = userID;
-            numOfPlayer.currentInRoom += 1;
-        }
-    
-        const updates = {};
-        updates['rooms/' + roomID + "/numOfPlayer"] = numOfPlayer;
-    
-        return update(ref(db), updates);
-    }
+    })
+    .catch((error) => {
+        console.error(error);
+    });
     
 }
 
-function alreadyInRoom(numOfPlayer){
+const ExitRoomBtn = document.getElementById("exit-room-btn");
+ExitRoomBtn.addEventListener("click", (e) => {
+    LeaveRoom();
+});
 
-    if(numOfPlayer.player1 == userID){
-        return true;
-    }
-    else if(numOfPlayer.player2 === userID)
-    {
-        return true;
-    }
-    else if(numOfPlayer.player3 === userID)
-    {
-        return true;
-    }
-    else if(numOfPlayer.player4 === userID)
-    {
-        return true;
-    }
-
-    return false;
+function LeaveRoom(){
+    set(ref(db, "Connection/" + roomID + "/" + userID), {
+        status : "Offline"
+    })
+    .then(() => {
+        route("Home");
+    });
 }

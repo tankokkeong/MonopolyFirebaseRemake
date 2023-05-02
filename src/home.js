@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { getDatabase, ref, set, child, get, onValue } from "firebase/database";
-import { route } from '../dist/script/module-helper';
+import { displayCustomMessage, route } from '../dist/script/module-helper';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAOaIjem-aPiQrmxn4K6Rnm-X9UcRg9q9c",
@@ -48,6 +48,7 @@ onAuthStateChanged(auth, (user) => {
                         const data = childSnapshot.val();
                         numberOfRoom++;
                         console.log(data)
+
                         const roomAction =  childSnapshot.val().status == "Start" ? 
                         `<td style="position: relative">
                             <span class="text-danger">Not Available</span>
@@ -61,7 +62,7 @@ onAuthStateChanged(auth, (user) => {
                         `<tr>
                             <td>` + childSnapshot.key + `</td>
                             <td class="text-warning">` + childSnapshot.val().status + `</td>
-                            <td>` + childSnapshot.val().numOfPlayer.currentInRoom + `/4</td>` + 
+                            <td><span id="current-player-` + childSnapshot.key + `">0</span>/4</td>` + 
                             roomAction
                             +
                         `</tr>`;
@@ -69,6 +70,23 @@ onAuthStateChanged(auth, (user) => {
 
                     //Display number of room
                     numberOfRoomDisplay.innerHTML = numberOfRoom + " room(s)";
+                });
+
+                // Check join game
+                const connectionRef = ref(db, 'Connection/');
+
+                onValue(connectionRef, (parentSnap) => {
+
+                    parentSnap.forEach((childSnap) => {
+                        var currentInRoom = 0;
+                        childSnap.forEach((grandChild) => {
+                            if(grandChild.val().status == "Online"){
+                                currentInRoom++;
+                            }
+                        });
+
+                        displayCustomMessage("current-player-"+ childSnap.key, currentInRoom);
+                    });
                 });
 
             } 
@@ -100,19 +118,12 @@ CreateRoomBtn.addEventListener("click", (e) => {
         createdBy: userID,
         createdName : username,
         createdAt: new Date(),
-        numOfPlayer: {
-            player1: userID,
-            player2: "",
-            player3: "",
-            player4: "",
-            currentInRoom: 1
-        },
         status : "Waiting",
         CurrentDiceNumber : 0,
         CurrentPlayerSequence : 1
     })
     .then(() => {
-        route("Room", roomID);
+        route("Room", "room=" + roomID);
     })
     .catch((error) => {
         // An error happened.
