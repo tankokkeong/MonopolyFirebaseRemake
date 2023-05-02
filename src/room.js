@@ -21,6 +21,27 @@ var roomID;
 var userID;
 var username;
 
+const gamePiece =
+[`<i class="fa fa-car player-color-1" aria-hidden="true"></i> `,
+`<i class="fa fa-bug player-color-2" aria-hidden="true"></i>`,
+`<i class="fa fa-motorcycle player-color-3" aria-hidden="true"></i>`,
+`<i class="fa fa-fighter-jet player-color-4" aria-hidden="true"></i>`];
+
+const playerPieceOnBoard = 
+[ `<div id="player-1" class="player-choice player-color-1">
+        <i class="fa fa-car" aria-hidden="true"></i>
+    </div>`,
+    `<div id="player-2" class="player-choice player-color-2">
+        <i class="fa fa-bug" aria-hidden="true"></i>
+    </div>`,
+    `<div id="player-3" class="player-choice player-color-3">
+        <i class="fa fa-motorcycle" aria-hidden="true"></i>
+    </div>`,
+    `<div id="player-4" class="player-choice player-color-4">
+        <i class="fa fa-fighter-jet" aria-hidden="true"></i>
+    </div>`
+];
+
 onAuthStateChanged(auth, (user) => {
     if (!user) {
         route("Index");
@@ -35,6 +56,56 @@ onAuthStateChanged(auth, (user) => {
                     route("Home");
                 }
                 else{
+                    //Display player List
+                    onValue(ref(db, "Connection/" + roomID + "/"), (snapshot) => {
+                        const playerListContainer = document.getElementById("player-display-list");
+
+                        //Remove the previous html tag
+                        playerListContainer.innerHTML = "";
+
+                        snapshot.forEach((childSnapshot) => {
+
+                            if(childSnapshot.val().status == "Online"){
+                                playerListContainer.innerHTML += 
+                                `<div class="player-display-container bg-light text-dark mt-2">
+                                    <div class="player-name-container">` +  
+                                            childSnapshot.val().piece
+                                        + `
+                                        <span id="player-` + childSnapshot.key +  `-piece"></span>
+                                        <span id="player-` + childSnapshot.key +  `-name">
+                                            ` + childSnapshot.val().name + `
+                                        </span> 
+
+                                        <span id="player-` + childSnapshot.key + `-host-state" class="room-host" style="display: none;">
+                                            <i class="fa fa-user-circle" aria-hidden="true"></i>
+                                        </span>
+                                        <span id="player-` + childSnapshot.key + `-ready-state" class="player-ready-state" style="display: none;">
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                        </span>
+                                    </div>
+
+                                    <div id="player-balance-container">
+                                        <i class="fa fa-money" aria-hidden="true"></i> 
+
+                                        <span class="text-success">
+                                            RM 
+                                            <span id="player-` + childSnapshot.key + `-balance">
+                                                20,000,000
+                                            </span>
+                                            
+                                        </span>
+                                    </div>
+
+                                    <div class="player-property-container">
+                                        <i class="fa fa-home" aria-hidden="true"></i>
+                                        <span class="text-info" id="player-`+ childSnapshot.key + `-property">0</span>
+                                    </div>
+                                </div>`; 
+                            }
+                            
+                        });
+                    });
+
                     const connectionRef = ref(db, "Connection/" + roomID + "/" + userID);
 
                     //If disconnected
@@ -75,7 +146,8 @@ function JoinRoom(uid){
         //If the room is not full
         if(currentInRoom < 1){
             set(ref(db, "Connection/" + roomID + "/" + uid), {
-                status : "Online"
+                status : "Online",
+                name: username
             })
             .then(() => {
                 console.log("Successfully join room")
