@@ -65,21 +65,25 @@ onAuthStateChanged(auth, (user) => {
 
                         snapshot.forEach((childSnapshot) => {
 
+                            const host = childSnapshot.val().hasOwnProperty("host") ? 
+                            `<span id="player-` + childSnapshot.key + `-host-state" class="room-host">
+                            <i class="fa fa-user-circle" aria-hidden="true"></i>
+                            </span>` : "";
+
                             if(childSnapshot.val().status == "Online"){
                                 playerListContainer.innerHTML += 
                                 `<div class="player-display-container bg-light text-dark mt-2">
                                     <div class="player-name-container">` +  
-                                            childSnapshot.val().piece
+                                    gamePiece[childSnapshot.val().pieceIndex]
                                         + `
                                         <span id="player-` + childSnapshot.key +  `-piece"></span>
                                         <span id="player-` + childSnapshot.key +  `-name">
                                             ` + childSnapshot.val().name + `
-                                        </span> 
+                                        </span>` 
 
-                                        <span id="player-` + childSnapshot.key + `-host-state" class="room-host" style="display: none;">
-                                            <i class="fa fa-user-circle" aria-hidden="true"></i>
-                                        </span>
-                                        <span id="player-` + childSnapshot.key + `-ready-state" class="player-ready-state" style="display: none;">
+                                        + host + 
+
+                                        `<span id="player-` + childSnapshot.key + `-ready-state" class="player-ready-state" style="display: none;">
                                             <i class="fa fa-check" aria-hidden="true"></i>
                                         </span>
                                     </div>
@@ -143,12 +147,29 @@ function JoinRoom(uid){
             }
         });
 
-        //If the room is not full
-        if(currentInRoom < 1){
-            set(ref(db, "Connection/" + roomID + "/" + uid), {
+        var newUser;
+
+        //Check Is Host
+        if(currentInRoom == 0){
+            newUser = {
                 status : "Online",
-                name: username
-            })
+                name: username,
+                host: true,
+                pieceIndex: currentInRoom
+            }
+        }
+        else
+        {
+            newUser = {
+                status : "Online",
+                name: username,
+                pieceIndex: currentInRoom
+            }
+        }
+
+        //If the room is not full
+        if(currentInRoom < 4){
+            set(ref(db, "Connection/" + roomID + "/" + uid), newUser)
             .then(() => {
                 console.log("Successfully join room")
             });
@@ -156,6 +177,7 @@ function JoinRoom(uid){
         else{
             route("Home");
         }
+        
     })
     .catch((error) => {
         console.error(error);
