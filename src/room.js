@@ -20,6 +20,7 @@ const dbRef = ref(getDatabase());
 var roomID;
 var userID;
 var username;
+var IAmReady = false;
 
 const gamePiece =
 [`<i class="fa fa-car player-color-1" aria-hidden="true"></i> `,
@@ -75,15 +76,18 @@ onAuthStateChanged(auth, (user) => {
                             <i class="fa fa-user-circle" aria-hidden="true"></i>
                             </span>` : "";
 
-                            const ready = childSnapshot.val().hasOwnProperty("gameStatus") ? 
-                            `<span id="player-` + childSnapshot.key + `-ready-state" class="player-ready-state">
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                            </span>` : "";
+                            var ready = "";
 
                             if(childSnapshot.val().status == "Online"){
 
                                 if(childSnapshot.val().hasOwnProperty("gameStatus")){
-                                    readyUser++;
+                                    if(childSnapshot.val().gameStatus === "Ready"){
+                                        readyUser++;
+                                        ready =  
+                                        `<span id="player-` + childSnapshot.key + `-ready-state" class="player-ready-state">
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                        </span>`;
+                                    }
                                 }
 
                                 playerInRoom++;
@@ -124,8 +128,7 @@ onAuthStateChanged(auth, (user) => {
                             
                         });
 
-                        console.log("pLAYER: ", playerInRoom, " Ready: ", readyUser)
-                        if(playerInRoom - 1 == readyUser){
+                        if(playerInRoom - 1 == readyUser && playerInRoom != 1){
                             StartBtn.disabled = false;
                         }
                         else{
@@ -163,7 +166,6 @@ onAuthStateChanged(auth, (user) => {
 function JoinRoom(uid){
     get(child(dbRef, "Connection/" + roomID)).then((snapshot) => {
         var currentInRoom = 0;
-        var readyCount = 0;
 
         snapshot.forEach(childSnap => {
             if(childSnap.val().status == "Online"){
@@ -236,10 +238,29 @@ function LeaveRoom(){
 }
 
 ReadyBtn.addEventListener("click", (e) => {
-    //Start Action
-    const updates = {};
-    updates["Connection/" + roomID + "/" + userID + "/" + "gameStatus"] = "Ready";
-    update(ref(db), updates).then((message) => {
-        console.log("I am ready!", message);
-    });
+    //Ready Action
+
+    if(!IAmReady){
+        const updates = {};
+        updates["Connection/" + roomID + "/" + userID + "/" + "gameStatus"] = "Ready";
+        update(ref(db), updates).then((message) => {
+            console.log("I am ready!", message);
+        });
+        IAmReady = true;
+        ReadyBtn.innerHTML = "Cancel Ready";
+        ReadyBtn.style.background = "#ffcc00";
+        ReadyBtn.style.color = "black"
+    }
+    else{
+        const updates = {};
+        updates["Connection/" + roomID + "/" + userID + "/" + "gameStatus"] = "Not Ready";
+        update(ref(db), updates).then((message) => {
+            console.log("I am ready!", message);
+        });
+        IAmReady = false;
+        ReadyBtn.innerHTML = "Get Ready";
+        ReadyBtn.style.background = "";
+        ReadyBtn.style.color = ""
+    }
+    
 });
