@@ -49,7 +49,7 @@ onAuthStateChanged(auth, (user) => {
                         numberOfRoom++;
                         console.log(data)
 
-                        const roomAction =  childSnapshot.val().status == "Start" ? 
+                        const roomAction =  childSnapshot.val().status == "Started" ? 
                         `<td style="position: relative">
                             <span class="text-danger">Not Available</span>
                         </td>`

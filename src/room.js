@@ -254,13 +254,17 @@ ReadyBtn.addEventListener("click", (e) => {
     else{
         const updates = {};
         updates["Connection/" + roomID + "/" + userID + "/" + "gameStatus"] = "Not Ready";
-        update(ref(db), updates).then((message) => {
-            console.log("I am ready!", message);
-        });
+        update(ref(db), updates);
         IAmReady = false;
         ReadyBtn.innerHTML = "Get Ready";
         ReadyBtn.style.background = "";
         ReadyBtn.style.color = ""
     }
     
+});
+
+StartBtn.addEventListener("click", (e) => {
+    const updates = {};
+    updates["rooms/" + roomID + "/status"] = "Started";
+    update(ref(db), updates);
 });
