@@ -62,6 +62,11 @@ export const getFormattedTimeStamp = () => {
     return formattedDate + ", " + formattedTime
 }
 
+export const setFormValue = (id, value) => {
+    var form = document.getElementById(id);
+    form.value = value;
+}
+
 function checkTime(i)
 {
 	if(i<10)

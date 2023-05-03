@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
-import { setCookie, displayCustomMessage, route, getUrlParams } from '../dist/script/module-helper';
+import { setCookie, displayCustomMessage, route, getUrlParams, setFormValue } from '../dist/script/module-helper';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAOaIjem-aPiQrmxn4K6Rnm-X9UcRg9q9c",
@@ -63,4 +63,10 @@ function Login(email, password) {
         });
     }
 }
+
+const ResetButton = document.getElementById("reset-button");
+ResetButton.addEventListener("click", (e) => {
+    setFormValue("user-email", "");
+    setFormValue("user-password", "");
+});
 

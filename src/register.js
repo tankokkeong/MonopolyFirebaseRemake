@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, set } from "firebase/database";
-import { displayCustomMessage, route, setCookie } from '../dist/script/module-helper';
+import { displayCustomMessage, route, setCookie, setFormValue } from '../dist/script/module-helper';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAOaIjem-aPiQrmxn4K6Rnm-X9UcRg9q9c",
@@ -81,3 +81,10 @@ function CreateNewUser(email, password, username){
     }
     
 }
+
+const ResetButton = document.getElementById("reset-button");
+ResetButton.addEventListener("click", (e) => {
+    setFormValue("user-email", "");
+    setFormValue("user-password", "");
+    setFormValue("username", "");
+});
