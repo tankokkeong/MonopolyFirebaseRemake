@@ -109,8 +109,7 @@ onAuthStateChanged(auth, (user) => {
                                 const DeletedRoomID = e.currentTarget.getAttribute("data-value");
 
                                 //Delete the relevant records
-                                remove(ref(db, 'Connection/' + DeletedRoomID));
-                                remove(ref(db, 'rooms/' + DeletedRoomID));
+                                removeRoom(DeletedRoomID);
                             }
                         });
                     }
@@ -128,6 +127,11 @@ onAuthStateChanged(auth, (user) => {
                                 currentInRoom++;
                             }
                         });
+
+                        if(currentInRoom == 0){
+                            //Remove room if there is no user
+                            removeRoom(childSnap.key);
+                        }
 
                         displayCustomMessage("current-player-"+ childSnap.key, currentInRoom);
                     });
@@ -188,3 +192,9 @@ CreateRoomBtn.addEventListener("click", (e) => {
         console.log(error)
     });
 });
+
+function removeRoom(roomID){
+    //Delete the relevant records
+    remove(ref(db, 'Connection/' + roomID));
+    remove(ref(db, 'rooms/' + roomID));
+}
