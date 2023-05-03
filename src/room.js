@@ -72,6 +72,7 @@ onAuthStateChanged(auth, (user) => {
                         const playerListContainer = document.getElementById("player-display-list");
                         var playerInRoom = 0;
                         var readyUser = 0;
+                        var hostCount = 0;
 
                         //Remove the previous html tag
                         playerListContainer.innerHTML = "";
@@ -82,6 +83,10 @@ onAuthStateChanged(auth, (user) => {
                             `<span id="player-` + childSnapshot.key + `-host-state" class="room-host">
                             <i class="fa fa-user-circle" aria-hidden="true"></i>
                             </span>` : "";
+
+                            if(host != ""){
+                                hostCount++;
+                            }
 
                             var ready = "";
 
@@ -132,6 +137,16 @@ onAuthStateChanged(auth, (user) => {
                                 </div>`; 
 
                             }
+
+                            if(hostCount > 1){
+                                const userInfo = {
+                                    status : "Online",
+                                    name: childSnapshot.val().name,
+                                    pieceIndex: childSnapshot.val().pieceIndex + 1
+                                };
+    
+                                set(ref(db, "Connection/" + roomID + "/" + childSnapshot.key), userInfo)
+                            }
                             
                         });
 
@@ -141,6 +156,7 @@ onAuthStateChanged(auth, (user) => {
                         else{
                             StartBtn.disabled = true;
                         }
+
                     });
 
                     const connectionRef = ref(db, "Connection/" + roomID + "/" + userID);
