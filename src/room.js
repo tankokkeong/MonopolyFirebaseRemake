@@ -67,119 +67,135 @@ onAuthStateChanged(auth, (user) => {
                     route("Home");
                 }
                 else{
-                    //Display player List
-                    onValue(ref(db, "Connection/" + roomID + "/"), (snapshot) => {
-                        const playerListContainer = document.getElementById("player-display-list");
-                        var playerInRoom = 0;
-                        var readyUser = 0;
-                        var hostCount = 0;
-
-                        //Remove the previous html tag
-                        playerListContainer.innerHTML = "";
-
-                        snapshot.forEach((childSnapshot) => {
-
-                            const host = childSnapshot.val().hasOwnProperty("host") ? 
-                            `<span id="player-` + childSnapshot.key + `-host-state" class="room-host">
-                            <i class="fa fa-user-circle" aria-hidden="true"></i>
-                            </span>` : "";
-
-                            if(host != ""){
-                                hostCount++;
-                            }
-
-                            var ready = "";
-
-                            if(childSnapshot.val().status == "Online"){
-
-                                if(childSnapshot.val().hasOwnProperty("gameStatus")){
-                                    if(childSnapshot.val().gameStatus === "Ready"){
-                                        readyUser++;
-                                        ready =  
-                                        `<span id="player-` + childSnapshot.key + `-ready-state" class="player-ready-state">
-                                        <i class="fa fa-check" aria-hidden="true"></i>
-                                        </span>`;
-                                    }
-                                }
-
-                                playerInRoom++;
-
-                                playerListContainer.innerHTML += 
-                                `<div class="player-display-container bg-light text-dark mt-2">
-                                    <div class="player-name-container">` +  
-                                    gamePiece[childSnapshot.val().pieceIndex]
-                                        + `
-                                        <span id="player-` + childSnapshot.key +  `-piece"></span>
-                                        <span id="player-` + childSnapshot.key +  `-name">
-                                            ` + childSnapshot.val().name + `
-                                        </span>`+
-                                        host + 
-
-                                        ready +
-                                    `</div>
-
-                                    <div id="player-balance-container">
-                                        <i class="fa fa-money" aria-hidden="true"></i> 
-
-                                        <span class="text-success">
-                                            RM 
-                                            <span id="player-` + childSnapshot.key + `-balance">
-                                                20,000,000
-                                            </span>
-                                            
-                                        </span>
-                                    </div>
-
-                                    <div class="player-property-container">
-                                        <i class="fa fa-home" aria-hidden="true"></i>
-                                        <span class="text-info" id="player-`+ childSnapshot.key + `-property">0</span>
-                                    </div>
-                                </div>`; 
-
-                            }
-
-                            if(hostCount > 1){
-                                const userInfo = {
-                                    status : "Online",
-                                    name: childSnapshot.val().name,
-                                    pieceIndex: childSnapshot.val().pieceIndex + 1
-                                };
-    
-                                set(ref(db, "Connection/" + roomID + "/" + childSnapshot.key), userInfo)
-                            }
-                            
-                        });
-
-                        if(playerInRoom - 1 == readyUser && playerInRoom != 1){
-                            StartBtn.disabled = false;
-                        }
-                        else{
-                            StartBtn.disabled = true;
-                        }
-
-                    });
-
-                    const connectionRef = ref(db, "Connection/" + roomID + "/" + userID);
-
-                    //If disconnected
-                    onDisconnect(connectionRef).set({
-                        status: "Offline"
-                    });
-
-                    onDisconnect(ref(db, "Online/" + userID)).set({
-                        recordTime: getFormattedTimeStamp(),
-                        status: "Offline"
-                    });;
-
-                    //Check room exists
-                    get(child(dbRef, `rooms/${roomID}`)).then((snapshot) => {
+                    //Check if there are multiple tabs with the same account
+                    get(child(dbRef, `Connection/${roomID}/${userID}`)).then((snapshot) => {
                         if(snapshot.exists()){
-                            JoinRoom(userID);
+                            if(snapshot.val().status == "Online"){
+                                route("Home");
+                            }
                         }
-                        else{
-                            route("Home");
+                        else
+                        {
+                            //Check room exists
+                            get(child(dbRef, `rooms/${roomID}`)).then((snapshot) => {
+                                if(snapshot.exists()){
+                                    JoinRoom(userID);
+
+                                    //Display player List
+                                    onValue(ref(db, "Connection/" + roomID + "/"), (snapshot) => {
+                                        const playerListContainer = document.getElementById("player-display-list");
+                                        var playerInRoom = 0;
+                                        var readyUser = 0;
+                                        var hostCount = 0;
+
+                                        //Remove the previous html tag
+                                        playerListContainer.innerHTML = "";
+
+                                        snapshot.forEach((childSnapshot) => {
+                                            var IsYou = "";
+                                            const host = childSnapshot.val().hasOwnProperty("host") ? 
+                                            `<span id="player-` + childSnapshot.key + `-host-state" class="room-host">
+                                            <i class="fa fa-user-circle" aria-hidden="true"></i>
+                                            </span>` : "";
+
+                                            if(host != ""){
+                                                hostCount++;
+                                            }
+
+                                            if(childSnapshot.key == userID){
+                                                IsYou = "(You)";
+                                            }
+
+                                            var ready = "";
+
+                                            if(childSnapshot.val().status == "Online"){
+
+                                                if(childSnapshot.val().hasOwnProperty("gameStatus")){
+                                                    if(childSnapshot.val().gameStatus === "Ready"){
+                                                        readyUser++;
+                                                        ready =  
+                                                        `<span id="player-` + childSnapshot.key + `-ready-state" class="player-ready-state">
+                                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                                        </span>`;
+                                                    }
+                                                }
+
+                                                playerInRoom++;
+
+                                                playerListContainer.innerHTML += 
+                                                `<div class="player-display-container bg-light text-dark mt-2">
+                                                    <div class="player-name-container">` +  
+                                                    gamePiece[childSnapshot.val().pieceIndex]
+                                                        + `
+                                                        <span id="player-` + childSnapshot.key +  `-piece"></span>
+                                                        <span id="player-` + childSnapshot.key +  `-name">
+                                                            ` + childSnapshot.val().name + IsYou + ` 
+                                                        </span>`+
+                                                        host + 
+
+                                                        ready +
+                                                    `</div>
+
+                                                    <div id="player-balance-container">
+                                                        <i class="fa fa-money" aria-hidden="true"></i> 
+
+                                                        <span class="text-success">
+                                                            RM 
+                                                            <span id="player-` + childSnapshot.key + `-balance">
+                                                                20,000,000
+                                                            </span>
+                                                            
+                                                        </span>
+                                                    </div>
+
+                                                    <div class="player-property-container">
+                                                        <i class="fa fa-home" aria-hidden="true"></i>
+                                                        <span class="text-info" id="player-`+ childSnapshot.key + `-property">0</span>
+                                                    </div>
+                                                </div>`; 
+
+                                            }
+
+                                            if(hostCount > 1){
+                                                const userInfo = {
+                                                    status : "Online",
+                                                    name: childSnapshot.val().name,
+                                                    pieceIndex: childSnapshot.val().pieceIndex + 1
+                                                };
+                    
+                                                set(ref(db, "Connection/" + roomID + "/" + childSnapshot.key), userInfo)
+                                            }
+                                            
+                                        });
+
+                                        if(playerInRoom - 1 == readyUser && playerInRoom != 1){
+                                            StartBtn.disabled = false;
+                                        }
+                                        else{
+                                            StartBtn.disabled = true;
+                                        }
+
+                                    });
+
+                                    const connectionRef = ref(db, "Connection/" + roomID + "/" + userID);
+
+                                    //If disconnected
+                                    onDisconnect(connectionRef).set({
+                                        status: "Offline"
+                                    });
+                
+                                    onDisconnect(ref(db, "Online/" + userID)).set({
+                                        recordTime: getFormattedTimeStamp(),
+                                        status: "Offline"
+                                    });;
+                                }
+                                else{
+                                    route("Home");
+                                }
+                            });
                         }
                     });
+
                 }
             } 
             else {
@@ -194,10 +210,15 @@ onAuthStateChanged(auth, (user) => {
 function JoinRoom(uid){
     get(child(dbRef, "Connection/" + roomID)).then((snapshot) => {
         var currentInRoom = 0;
+        var alreadyInRoom = false;
 
         snapshot.forEach(childSnap => {
             if(childSnap.val().status == "Online"){
                 currentInRoom++;
+
+                if(childSnap.key == userID){
+                    alreadyInRoom = true;
+                }
             }
 
             if(childSnap.val().hasOwnProperty("gameStatus")){
@@ -207,40 +228,43 @@ function JoinRoom(uid){
             }
         });
 
-        var newUser;
+        if(!alreadyInRoom){
+            var newUser;
 
-        //Check Is Host
-        if(currentInRoom == 0){
-            newUser = {
-                status : "Online",
-                name: username,
-                host: true,
-                pieceIndex: currentInRoom
+            //Check Is Host
+            if(currentInRoom == 0){
+                newUser = {
+                    status : "Online",
+                    name: username,
+                    host: true,
+                    pieceIndex: currentInRoom
+                }
+    
+                //Show start button
+                StartBtn.style.display = "";
             }
-
-            //Show start button
-            StartBtn.style.display = "";
+            else
+            {
+                newUser = {
+                    status : "Online",
+                    name: username,
+                    pieceIndex: currentInRoom
+                }
+    
+                //Show ready button
+                ReadyBtn.style.display = "";
+            }
+    
+            //If the room is not full
+            if(currentInRoom < 4){
+                set(ref(db, "Connection/" + roomID + "/" + uid), newUser);
+            }
+            else{
+                route("Home");
+            }
         }
         else
         {
-            newUser = {
-                status : "Online",
-                name: username,
-                pieceIndex: currentInRoom
-            }
-
-            //Show ready button
-            ReadyBtn.style.display = "";
-        }
-
-        //If the room is not full
-        if(currentInRoom < 4){
-            set(ref(db, "Connection/" + roomID + "/" + uid), newUser)
-            .then(() => {
-                console.log("Successfully join room")
-            });
-        }
-        else{
             route("Home");
         }
         
