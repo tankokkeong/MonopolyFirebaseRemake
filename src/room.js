@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getDatabase, ref, set, get, child, update, onDisconnect, onValue, remove } from "firebase/database";
-import { route, getUrlParams, getCookie } from '../dist/script/module-helper';
+import { getDatabase, ref, set, get, child, update, onDisconnect, onValue, query, orderByValue} from "firebase/database";
+import { route, getUrlParams, getFormattedTimeStamp } from '../dist/script/module-helper';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAOaIjem-aPiQrmxn4K6Rnm-X9UcRg9q9c",
@@ -52,6 +52,13 @@ onAuthStateChanged(auth, (user) => {
     } 
     else{
         userID = user.uid;
+
+        // Set user online
+        set(ref(db, 'Online/' + userID), {
+            recordTime: getFormattedTimeStamp(),
+            status: "Online"
+        });
+
         get(child(dbRef, `users/${userID}`)).then((snapshot) => {
             if (snapshot.exists()) {
                 username = snapshot.val().username;
@@ -142,6 +149,11 @@ onAuthStateChanged(auth, (user) => {
                     onDisconnect(connectionRef).set({
                         status: "Offline"
                     });
+
+                    onDisconnect(ref(db, "Online/" + userID)).set({
+                        recordTime: getFormattedTimeStamp(),
+                        status: "Offline"
+                    });;
 
                     //Check room exists
                     get(child(dbRef, `rooms/${roomID}`)).then((snapshot) => {

@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { getDatabase, ref, set, child, get, onValue } from "firebase/database";
-import { displayCustomMessage, route } from '../dist/script/module-helper';
+import { getDatabase, ref, set, child, get, onValue, onDisconnect } from "firebase/database";
+import { displayCustomMessage, route, getFormattedTimeStamp } from '../dist/script/module-helper';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAOaIjem-aPiQrmxn4K6Rnm-X9UcRg9q9c",
@@ -30,6 +30,19 @@ onAuthStateChanged(auth, (user) => {
     } 
     else{
         userID = user.uid;
+
+        //If use connected
+        set(ref(db, 'Online/' + userID), {
+            recordTime: getFormattedTimeStamp(),
+            status: "Online"
+        });
+
+        //If user disconnected
+        onDisconnect(ref(db, "Online/" + userID)).set({
+            recordTime: getFormattedTimeStamp(),
+            status: "Offline"
+        });;
+
         get(child(dbRef, `users/${userID}`)).then((snapshot) => {
             if (snapshot.exists()) {
                 username = snapshot.val().username;
@@ -45,9 +58,7 @@ onAuthStateChanged(auth, (user) => {
                     numberOfRoom = 0;
 
                     snapshot.forEach((childSnapshot) => {
-                        const data = childSnapshot.val();
                         numberOfRoom++;
-                        console.log(data)
 
                         const roomAction =  childSnapshot.val().status == "Started" ? 
                         `<td style="position: relative">
@@ -69,7 +80,7 @@ onAuthStateChanged(auth, (user) => {
                     });
 
                     //Display number of room
-                    numberOfRoomDisplay.innerHTML = numberOfRoom + " room(s)";
+                    numberOfRoomDisplay.innerHTML = numberOfRoom;
                 });
 
                 // Check join game
@@ -87,6 +98,20 @@ onAuthStateChanged(auth, (user) => {
 
                         displayCustomMessage("current-player-"+ childSnap.key, currentInRoom);
                     });
+                });
+
+                //Check total online user
+                onValue(ref(db, 'Online/'), (parentSnap) => {
+                    var currentOnline = 0;
+
+                    parentSnap.forEach((childSnap) => {
+                        if(childSnap.val().status == "Online"){
+                            currentOnline++;
+                        }
+                    });
+
+                    displayCustomMessage("total-online-user", currentOnline);
+
                 });
 
             } 
@@ -130,5 +155,3 @@ CreateRoomBtn.addEventListener("click", (e) => {
         console.log(error)
     });
 });
-
-const JoinRoomBtn = document.getElementById("")

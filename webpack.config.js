@@ -6,7 +6,8 @@ module.exports = {
         login: "./src/login.js",
         register: "./src/register.js",
         home : "./src/home.js",
-        room : "./src/room.js"
+        room : "./src/room.js",
+        rules: "./src/rules.js"
     },
     output: {
         path: path.resolve(__dirname, 'dist/build'),

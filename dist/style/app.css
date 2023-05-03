@@ -80,6 +80,9 @@ main h1 {
     margin-bottom: 20px;
 }
 
+.total-online-user-container{
+    font-size: 18px;
+}
 /***** Table *****/
 /* .table {
     border-collapse: collapse;

@@ -40,3 +40,34 @@ export const getUrlParams = (paramName) => {
 
     return urlParams.get(paramName);
 }
+
+export const getFormattedTimeStamp = () => {
+    // Get Current Timestamp
+    var date = new Date();
+
+    var months_array = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    // Get hour and minute
+    var hour = date.getHours();
+	var minute= date.getMinutes();
+
+    // Get date, month, and year
+    var day = date.getDate(); 
+    var month = months_array[date.getMonth()];
+    var year = date.getFullYear();
+
+    var formattedDate = month + " " +  day + " " + year;
+    var formattedTime = checkTime(hour) + ":" + checkTime(minute);
+
+    return formattedDate + ", " + formattedTime
+}
+
+function checkTime(i)
+{
+	if(i<10)
+	{
+		i="0"+i;
+	}
+	
+	return i;
+}
