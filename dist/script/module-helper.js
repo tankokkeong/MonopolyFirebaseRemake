@@ -62,6 +62,14 @@ export const getFormattedTimeStamp = () => {
     return formattedDate + ", " + formattedTime
 }
 
+export const getTimestamp = () => {
+    // Get Current Timestamp
+    var date = new Date();
+    var timestamp = date.getTime();
+
+    return timestamp;
+};
+
 export const setFormValue = (id, value) => {
     var form = document.getElementById(id);
     form.value = value;

@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { getDatabase, ref, set, child, get, onValue, onDisconnect } from "firebase/database";
-import { displayCustomMessage, route, getFormattedTimeStamp } from '../dist/script/module-helper';
+import { getDatabase, ref, set, child, get, onValue, onDisconnect, remove } from "firebase/database";
+import { displayCustomMessage, route, getFormattedTimeStamp, getTimestamp } from '../dist/script/module-helper';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAOaIjem-aPiQrmxn4K6Rnm-X9UcRg9q9c",
@@ -23,6 +23,20 @@ const WelcomeDisplay = document.getElementById("welcome-display");
 var numberOfRoom = 0;
 var userID;
 var username;
+var adminID;
+
+get(child(dbRef, `AdminID`)).then((snapshot) => {
+    if (snapshot.exists()) {
+        adminID = snapshot.val();
+    } 
+    else 
+    {
+        console.log("Admin not available!");
+    }
+})
+.catch((error) => {
+console.error(error);
+});
 
 onAuthStateChanged(auth, (user) => {
     if (!user) {
@@ -59,14 +73,19 @@ onAuthStateChanged(auth, (user) => {
 
                     snapshot.forEach((childSnapshot) => {
                         numberOfRoom++;
+                        const adminAction = userID == adminID ? 
+                        `<button class="btn btn-danger delete-btn ml-3" data-value="${childSnapshot.key}">Remove</button>`
+                        : "";
 
                         const roomAction =  childSnapshot.val().status == "Started" ? 
                         `<td style="position: relative">
                             <span class="text-danger">Not Available</span>
+                            ${adminAction}
                         </td>`
                         :
                         `<td style="position: relative">
-                            <a class="btn btn-primary" onclick="route('Room','room=` +  childSnapshot.key + `')">Join Game</button>                    
+                            <button class="btn btn-primary" onclick="route('Room','room=` +  childSnapshot.key + `')">Join Game</button>
+                            ${adminAction}                    
                         </td>`;
 
                         roomDisplay.innerHTML = roomDisplay.innerHTML+
@@ -81,6 +100,20 @@ onAuthStateChanged(auth, (user) => {
 
                     //Display number of room
                     numberOfRoomDisplay.innerHTML = numberOfRoom;
+
+                    const DeleteBtn = document.getElementsByClassName("delete-btn");
+                    for(var i = 0; i < DeleteBtn.length; i++){
+                        DeleteBtn[i].addEventListener("click", (e) => {
+
+                            if (window.confirm("Do you want to delete remove this room?")) {
+                                const DeletedRoomID = e.currentTarget.getAttribute("data-value");
+
+                                //Delete the relevant records
+                                remove(ref(db, 'Connection/' + DeletedRoomID));
+                                remove(ref(db, 'rooms/' + DeletedRoomID));
+                            }
+                        });
+                    }
                 });
 
                 // Check join game
@@ -142,7 +175,7 @@ CreateRoomBtn.addEventListener("click", (e) => {
     set(ref(db, 'rooms/' + roomID), {
         createdBy: userID,
         createdName : username,
-        createdAt: new Date(),
+        createdAt: getTimestamp(),
         status : "Waiting",
         CurrentDiceNumber : 0,
         CurrentPlayerSequence : 1
