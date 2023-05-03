@@ -70,3 +70,12 @@ ResetButton.addEventListener("click", (e) => {
     setFormValue("user-password", "");
 });
 
+const LoginControl = document.getElementsByClassName("login-control");
+for(var i = 0; i < LoginControl.length; i++){
+
+    LoginControl[i].addEventListener("keyup", (e) => {
+        if (e.keyCode === 13) {
+            LoginBtn.click();
+        }
+    });
+}

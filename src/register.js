@@ -88,3 +88,13 @@ ResetButton.addEventListener("click", (e) => {
     setFormValue("user-password", "");
     setFormValue("username", "");
 });
+
+const RegisterControl = document.getElementsByClassName("register-control");
+for(var i = 0; i < RegisterControl.length; i++){
+
+    RegisterControl[i].addEventListener("keyup", (e) => {
+        if (e.keyCode === 13) {
+            RegisterBtn.click();
+        }
+    });
+}
