@@ -420,7 +420,7 @@ ReadyBtn.addEventListener("click", (e) => {
 
 StartBtn.addEventListener("click", (e) => {
     const updates = {};
-    updates["rooms/" + roomID + "/status"] = "Started";
+    updates["GameStatus/" + roomID + "/status"] = "Started";
     update(ref(db), updates);
 });
 

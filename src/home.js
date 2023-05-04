@@ -79,25 +79,16 @@ onAuthStateChanged(auth, (user) => {
                         `<button class="btn btn-danger delete-btn ml-3" data-value="${childSnapshot.key}">Remove</button>`
                         : "";
 
-                        const roomAction =  childSnapshot.val().status == "Started" ? 
-                        `<td style="position: relative">
-                            <span class="text-danger">Not Available</span>
-                            ${adminAction}
-                        </td>`
-                        :
-                        `<td style="position: relative">
-                            <button class="btn btn-primary" onclick="route('Room','room=` +  childSnapshot.key + `')">Join Game</button>
-                            ${adminAction}                    
-                        </td>`;
-
                         roomDisplay.innerHTML = roomDisplay.innerHTML+
                         `<tr>
                             <td>` + childSnapshot.key + `</td>
-                            <td class="text-warning">` + childSnapshot.val().status + `</td>
-                            <td><span id="current-player-` + childSnapshot.key + `">0</span>/4</td>` + 
-                            roomAction
-                            +
-                        `</tr>`;
+                            <td class="text-warning" id="game-status-${childSnapshot.key}">Loading...</td>
+                            <td><span id="current-player-` + childSnapshot.key + `">0</span>/4</td>
+                            <td style="position: relative">
+                                <span class="text-danger" id="game-action-${childSnapshot.key}">Loading...</span>
+                                ${adminAction}
+                            </td>
+                        </tr>`;
                     });
 
                     //Display number of room
@@ -126,6 +117,7 @@ onAuthStateChanged(auth, (user) => {
                 // Check join game
                 const connectionRef = ref(db, 'Connection/');
 
+                //Check number of player in a room
                 onValue(connectionRef, (parentSnap) => {
 
                     parentSnap.forEach((childSnap) => {
@@ -142,6 +134,21 @@ onAuthStateChanged(auth, (user) => {
                         }
 
                         displayCustomMessage("current-player-"+ childSnap.key, currentInRoom);
+                    });
+                });
+
+                //Check total online user
+                onValue(ref(db, 'GameStatus/'), (parentSnap) => {
+                    parentSnap.forEach((childSnap) => {
+                        displayCustomMessage(`game-status-${childSnap.key}`, childSnap.val().status);
+                        
+                        if(childSnap.val().status == "Waiting"){
+                            displayCustomMessage(`game-action-${childSnap.key}`, `<button class="btn btn-primary" onclick="route('Room','room=` +  childSnap.key + `')">Join Game</button>`);
+                        }
+                        else
+                        {
+                            displayCustomMessage(`game-action-${childSnap.key}`, `<span class="text-danger">Not Available</span>`);
+                        }
                     });
                 });
 
@@ -188,12 +195,17 @@ CreateRoomBtn.addEventListener("click", (e) => {
         createdBy: userID,
         createdName : username,
         createdAt: getTimestamp(),
-        status : "Waiting",
         CurrentDiceNumber : 0,
         CurrentPlayerSequence : 1
     })
     .then(() => {
-        route("Room", "room=" + roomID);
+        set(ref(db, 'GameStatus/' + roomID), {
+            createdAt: getFormattedTimeStamp(),
+            status : "Waiting",
+        })
+        .then(() => {
+            route("Room", "room=" + roomID);
+        });
     })
     .catch((error) => {
         // An error happened.
@@ -205,6 +217,7 @@ function removeRoom(roomID){
     //Delete the relevant records
     remove(ref(db, 'Connection/' + roomID));
     remove(ref(db, 'rooms/' + roomID));
+    remove(ref(db, 'GameStatus/' + roomID));
 }
 
 //Display if admin closed the room
