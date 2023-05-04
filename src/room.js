@@ -70,23 +70,34 @@ onAuthStateChanged(auth, (user) => {
                     route("Home");
                 }
                 else{
+                    //Check kicked
+                    onValue(ref(db, "Kicked/" + roomID + "/"), (snapshot) => {
+                        snapshot.forEach((childSnap) =>{
+                            if(childSnap.key == userID){
+                                route("Home", "HostKicked");
+                            }
+                        });
+                    });
+
+                    console.log("b4 check multiple tab")
                     //Check if there are multiple tabs with the same account
                     get(child(dbRef, `Connection/${roomID}/${userID}`)).then((snapshot) => {
-                        if(snapshot.exists()){
-                            if(snapshot.val().status == "Online"){
-                                route("Home");
-                            }
+
+                        if(snapshot.exists() && snapshot.val().status == "Online"){
+                            route("Home", "MultipleAccount");
                         }
                         else
                         {
+                            console.log("b4 check room exists")
+
                             //Check room exists
                             get(child(dbRef, `rooms/${roomID}`)).then((snapshot) => {
                                 if(snapshot.exists()){
 
                                     //Used to detect whether admin closes the room
                                     onValue(ref(db, "rooms"), (snapshot) => {
-                                        get(child(dbRef, `rooms/${roomID}`)).then((snapshot) => {
-                                            if(!snapshot.exists()){
+                                        get(child(dbRef, `AdminClosed/${roomID}`)).then((snapshot) => {
+                                            if(snapshot.exists()){
                                                 route("Home", "AdminClosed");
                                             }
                                         });
@@ -118,6 +129,11 @@ onAuthStateChanged(auth, (user) => {
                                             `<button class='btn btn-danger ml-1 kick-btn p-1' data-value="${childSnapshot.key}" style="display:none;">
                                                 <i class='fa fa-trash' aria-hidden='true'></i>
                                             </button>`;
+
+                                            //Check if the user is kicked
+                                            if(childSnapshot.val().hasOwnProperty("kicked") && childSnapshot.key == userID){
+                                                route("Home", "HostKicked");
+                                            }
 
                                             if(host != ""){
                                                 hostCount++;
@@ -199,6 +215,25 @@ onAuthStateChanged(auth, (user) => {
 
                                         if(hostID == userID){
                                             displayHTMLElementByClass("kick-btn");
+
+                                            const KickBtn = document.getElementsByClassName("kick-btn");
+                                            for(var i = 0; i < KickBtn.length; i++){
+                                                KickBtn[i].addEventListener("click", (e) =>{
+                                                    if(window.confirm("Do you want to kick this player?")){
+                                                        const kickID = e.currentTarget.getAttribute("data-value");
+
+                                                        set(ref(db, "Kicked/" + roomID + "/" + kickID), {
+                                                            kickedAt: getFormattedTimeStamp(),
+                                                        })
+                                                        .then(() => {
+                                                            set(ref(db, "Connection/" + roomID + "/" + kickID), {
+                                                                status: "Offline",
+                                                            });
+                                                        })
+                                                        
+                                                    }
+                                                });
+                                            }
                                         }
 
                                     });
@@ -235,71 +270,82 @@ onAuthStateChanged(auth, (user) => {
 });
 
 function JoinRoom(uid){
-    get(child(dbRef, "Connection/" + roomID)).then((snapshot) => {
-        var currentInRoom = 0;
-        var alreadyInRoom = false;
+    console.log("I am in join")
 
-        snapshot.forEach(childSnap => {
-            if(childSnap.val().status == "Online"){
-                currentInRoom++;
-
-                if(childSnap.key == userID){
-                    alreadyInRoom = true;
-                }
-            }
-
-            if(childSnap.val().hasOwnProperty("gameStatus")){
-                if(child.val().gameStatus == "Ready"){
-                    readyCount++;
-                }
-            }
-        });
-
-        if(!alreadyInRoom){
-            var newUser;
-
-            //Check Is Host
-            if(currentInRoom == 0){
-                newUser = {
-                    status : "Online",
-                    name: username,
-                    host: true,
-                    pieceIndex: currentInRoom
-                }
-    
-                //Show start button
-                StartBtn.style.display = "";
-            }
-            else
-            {
-                newUser = {
-                    status : "Online",
-                    name: username,
-                    pieceIndex: currentInRoom
-                }
-    
-                //Show ready button
-                ReadyBtn.style.display = "";
-            }
-    
-            //If the room is not full
-            if(currentInRoom < 4){
-                set(ref(db, "Connection/" + roomID + "/" + uid), newUser);
-            }
-            else{
-                route("Home");
-            }
+    get(child(dbRef, "Kicked/" + roomID + "/" + uid)).then((snapshot) => {
+        if(snapshot.exists()){
+            route("Home", "KickedRejoin");
         }
-        else
-        {
-            route("Home");
-        }
+        else{
+            get(child(dbRef, "Connection/" + roomID)).then((snapshot) => {
+                var currentInRoom = 0;
+                var alreadyInRoom = false;
         
-    })
-    .catch((error) => {
-        console.error(error);
+                snapshot.forEach(childSnap => {
+                    if(childSnap.val().status == "Online"){
+                        currentInRoom++;
+        
+                        if(childSnap.key == userID){
+                            alreadyInRoom = true;
+                        }
+                    }
+        
+                    if(childSnap.val().hasOwnProperty("gameStatus")){
+                        if(child.val().gameStatus == "Ready"){
+                            readyCount++;
+                        }
+                    }
+        
+                });
+        
+        
+                if(!alreadyInRoom){
+                    var newUser;
+        
+                    //Check Is Host
+                    if(currentInRoom == 0){
+                        newUser = {
+                            status : "Online",
+                            name: username,
+                            host: true,
+                            pieceIndex: currentInRoom
+                        }
+            
+                        //Show start button
+                        StartBtn.style.display = "";
+                    }
+                    else
+                    {
+                        newUser = {
+                            status : "Online",
+                            name: username,
+                            pieceIndex: currentInRoom
+                        }
+            
+                        //Show ready button
+                        ReadyBtn.style.display = "";
+                    }
+            
+                    //If the room is not full
+                    if(currentInRoom < 4){
+                        set(ref(db, "Connection/" + roomID + "/" + uid), newUser);
+                    }
+                    else{
+                        route("Home");
+                    }
+                }
+                else
+                {
+                    route("Home");
+                }
+                
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        }
     });
-    
+
 }
 
 const ExitRoomBtn = document.getElementById("exit-room-btn");

@@ -110,8 +110,14 @@ onAuthStateChanged(auth, (user) => {
                             if (window.confirm("Do you want to delete remove this room?")) {
                                 const DeletedRoomID = e.currentTarget.getAttribute("data-value");
 
-                                //Delete the relevant records
-                                removeRoom(DeletedRoomID);
+                                set(ref(db, 'AdminClosed/' + DeletedRoomID), {
+                                    deletedAt: getFormattedTimeStamp(),
+                                })
+                                .then(() => {
+                                    //Delete the relevant records
+                                    removeRoom(DeletedRoomID);
+                                });
+
                             }
                         });
                     }
@@ -204,5 +210,17 @@ function removeRoom(roomID){
 //Display if admin closed the room
 if(getUrlParams("AdminClosed") != null){
     displayCustomMessage("home-alert-text", "Your room was removed by Admin!");
+    displayHTMLElement("home-alert");
+}
+
+//Display if kicked by the room host
+if(getUrlParams("HostKicked") != null){
+    displayCustomMessage("home-alert-text", "You were kicked by the room host!");
+    displayHTMLElement("home-alert");
+}
+
+//Display if kicked rejoin message
+if(getUrlParams("KickedRejoin") != null){
+    displayCustomMessage("home-alert-text", "You cannot rejoin the room if you were kicked before!");
     displayHTMLElement("home-alert");
 }
