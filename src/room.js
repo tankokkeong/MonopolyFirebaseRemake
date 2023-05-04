@@ -518,6 +518,7 @@ GameChatInput.addEventListener("keyup", (e) =>{
     }
 });
 
+//Double click tab section to scroll to bottom automatically
 const ChatTab = document.getElementById("nav-chat-tab");
 ChatTab.addEventListener("click", (e) => {
     ChatDisplayContainer.scrollTo(0, ChatDisplayContainer.scrollHeight);
