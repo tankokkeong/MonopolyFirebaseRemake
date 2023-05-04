@@ -115,7 +115,7 @@ onAuthStateChanged(auth, (user) => {
                                             const kickAction = childSnapshot.val().hasOwnProperty("host") ? 
                                             "" 
                                             :
-                                            `<button class='btn btn-danger ml-3 kick-btn' data-value="${childSnapshot.key}" style="display:none;">
+                                            `<button class='btn btn-danger ml-1 kick-btn p-1' data-value="${childSnapshot.key}" style="display:none;">
                                                 <i class='fa fa-trash' aria-hidden='true'></i>
                                             </button>`;
 
