@@ -35,76 +35,6 @@
 
             <div class="map-container">
 
-                <!-- Join Game Container -->
-                <!-- <div id="join-game-container">
-
-                    <div id="join-game-form-container">
-                        <div class="text-center mb-3">
-                            <h1>Join Game</h1>
-                        </div>
-
-                        <form class="form" @submit.prevent="joinGame">
-                            <div class="form-group row">
-                                <label class="col-sm-4 col-form-label">Your Favorite Piece: </label>
-
-                                <div class="col-sm-8">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="piece" id="car" value="<i class='fa fa-car' aria-hidden='true'></i>" checked>
-                                        <label class="form-check-label join-game-label" for="car">
-                                            <i class="fa fa-car player-color-1" aria-hidden="true"></i> 
-                                            Car
-                                        </label>
-                                    </div>
-
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="piece" id="bug" value="<i class='fa fa-bug' aria-hidden='true'></i>">
-                                        <label class="form-check-label join-game-label" for="bug">
-                                            <i class="fa fa-bug player-color-2" aria-hidden="true"></i>
-                                            Bug
-                                        </label>
-                                    </div>
-
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="piece" id="motorcycle" value="<i class='fa fa-motorcycle' aria-hidden='true'></i>">
-                                        <label class="form-check-label join-game-label" for="motorcycle">
-                                            <i class="fa fa-motorcycle player-color-3" aria-hidden="true"></i> 
-                                            Motorcycle
-                                        </label>
-                                    </div>
-
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="piece" id="fighter-jet" value="<i class='fa fa-fighter-jet' aria-hidden='true'></i>">
-                                        <label class="form-check-label join-game-label" for="fighter-jet">
-                                            <i class="fa fa-fighter-jet player-color-4" aria-hidden="true"></i> 
-                                            Fighter Jet
-                                        </label>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <div class="text-center">
-                                <button class="btn btn-success">Join Game</button>
-                            </div>
-                        </form>
-                    </div>
-
-                </div> -->
-
-                <!-- Google Map container -->
-                <div id="google-map-container" style="display: none;">
-                    <div class="text-center">
-                        <h4>Choose your property</h3>
-                    </div>
-
-                    <div id="map"></div>
-
-                    <div class="text-center mt-2" id="location-action-section">
-                        <button class="btn btn-success" @click.prevent="confirmLocation">Confirm Location</button>
-                        <button class="btn btn-danger" @click.prevent="removeGoogleMapContainer">Cancel Deal</button>
-                    </div>
-                </div>
-                
                 <!-- Card Display -->
                 <div id="community-chest-display-container" class="text-center" style="display: none;">
                     <div id="chest-display-title">
@@ -1079,6 +1009,11 @@
                         
                         <input type="range" min="0" max="100" id="volume-adjust-input" value="100">
 
+                    </div>
+
+                    <div class="bg-light mt-3" id="game-timer-container">
+                        <i class="fa fa-clock-o" aria-hidden="true"></i>
+                        <span id="game-time-display">00:00:00</span>
                     </div>
 
                 </div>

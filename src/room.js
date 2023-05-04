@@ -2,7 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, set, get, child, update, onDisconnect, onValue, query, orderByValue} from "firebase/database";
 import { route, getUrlParams, getFormattedTimeStamp
-    , displayHTMLElementByClass 
+    , displayHTMLElementByClass, doubleDigitFormatter 
 } from '../dist/script/module-helper';
 
 const firebaseConfig = {
@@ -93,6 +93,8 @@ onAuthStateChanged(auth, (user) => {
                             //Check room exists
                             get(child(dbRef, `rooms/${roomID}`)).then((snapshot) => {
                                 if(snapshot.exists()){
+                                    //Display game timer
+                                    gameTimer(snapshot.val().createdAt);
 
                                     //Used to detect whether admin closes the room
                                     onValue(ref(db, "rooms"), (snapshot) => {
@@ -441,3 +443,25 @@ const VolumeBar = document.getElementById("volume-adjust-input");
 VolumeBar.addEventListener("input", (e) => {
     adjustVolume();
 });
+
+function gameTimer(date) {
+    const countDownDate = new Date(date).getTime();
+
+    setInterval(function() {
+        // Get today's date and time
+        var now = new Date().getTime();
+                
+        // Find the distance between now and the count down date
+        var distance = now - countDownDate;
+            
+        // Time calculations for days, hours, minutes and seconds
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+        // Output the result in an element with id="demo"
+        document.getElementById("game-time-display").innerHTML =  
+        doubleDigitFormatter(hours) + ":" + doubleDigitFormatter(minutes) + ":" + doubleDigitFormatter(seconds);
+    }, 1000);
+
+}

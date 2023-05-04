@@ -101,6 +101,10 @@ export const removeHTMLElementByClass = (className) =>{
     }
 }
 
+export const doubleDigitFormatter = (i) =>{
+	return checkTime(i);
+}
+
 function checkTime(i)
 {
 	if(i<10)
