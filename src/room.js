@@ -393,3 +393,51 @@ StartBtn.addEventListener("click", (e) => {
     updates["rooms/" + roomID + "/status"] = "Started";
     update(ref(db), updates);
 });
+
+const backgroundMusic = document.getElementById("background-music");
+//Play background music by default
+backgroundMusic.play();
+
+function muteVolume(){
+
+    var input = document.getElementById("volume-adjust-input");
+
+    if(input.value != 0){
+        input.value = 0;
+    }
+    else{
+        input.value = 100;
+    }
+
+    adjustVolume();
+}
+
+function adjustVolume(){
+    var music = document.getElementById("background-music");
+    var input = document.getElementById("volume-adjust-input");
+    var volumeIcon = document.getElementById("volume-icon");
+
+    if(input.value <= 100 && input.value > 70){
+        volumeIcon.innerHTML = `<i class="fa fa-volume-up" aria-hidden="true"></i>`;
+    }
+    else if(input.value <= 70 && input.value != 0){
+        volumeIcon.innerHTML = `<i class="fa fa-volume-down" aria-hidden="true"></i>`;
+    }
+    else if(input.value == 0){
+        volumeIcon.innerHTML = `<i class="fa fa-volume-off" aria-hidden="true"></i>`;
+    }
+
+    music.volume = parseFloat(input.value / 100);
+
+    //console.log("volume: " + (input / 100).toFixed());
+}
+
+const MuteButton = document.getElementById("volume-icon");
+MuteButton.addEventListener("click", (e) => {
+    muteVolume();
+});
+
+const VolumeBar = document.getElementById("volume-adjust-input");
+VolumeBar.addEventListener("input", (e) => {
+    adjustVolume();
+});
