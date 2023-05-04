@@ -1,7 +1,9 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, set, get, child, update, onDisconnect, onValue, query, orderByValue} from "firebase/database";
-import { route, getUrlParams, getFormattedTimeStamp } from '../dist/script/module-helper';
+import { route, getUrlParams, getFormattedTimeStamp
+    , displayHTMLElementByClass 
+} from '../dist/script/module-helper';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAOaIjem-aPiQrmxn4K6Rnm-X9UcRg9q9c",
@@ -98,6 +100,7 @@ onAuthStateChanged(auth, (user) => {
                                         var playerInRoom = 0;
                                         var readyUser = 0;
                                         var hostCount = 0;
+                                        var hostID = "";
 
                                         //Remove the previous html tag
                                         playerListContainer.innerHTML = "";
@@ -109,8 +112,16 @@ onAuthStateChanged(auth, (user) => {
                                             <i class="fa fa-user-circle" aria-hidden="true"></i>
                                             </span>` : "";
 
+                                            const kickAction = childSnapshot.val().hasOwnProperty("host") ? 
+                                            "" 
+                                            :
+                                            `<button class='btn btn-danger ml-3 kick-btn' data-value="${childSnapshot.key}" style="display:none;">
+                                                <i class='fa fa-trash' aria-hidden='true'></i>
+                                            </button>`;
+
                                             if(host != ""){
                                                 hostCount++;
+                                                hostID = childSnapshot.key;
                                             }
 
                                             if(childSnapshot.key == userID){
@@ -143,8 +154,8 @@ onAuthStateChanged(auth, (user) => {
                                                             ` + childSnapshot.val().name + IsYou + ` 
                                                         </span>`+
                                                         host + 
-
                                                         ready +
+                                                        kickAction +
                                                     `</div>
 
                                                     <div id="player-balance-container">
@@ -184,6 +195,10 @@ onAuthStateChanged(auth, (user) => {
                                         }
                                         else{
                                             StartBtn.disabled = true;
+                                        }
+
+                                        if(hostID == userID){
+                                            displayHTMLElementByClass("kick-btn");
                                         }
 
                                     });

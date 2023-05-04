@@ -80,9 +80,25 @@ export const displayHTMLElement = (id) =>{
     element.style.display = "";
 }
 
+export const displayHTMLElementByClass = (className) =>{
+    var element = document.getElementsByClassName(className);
+
+    for(var i = 0 ; i < element.length; i++){
+        element[i].style.display = "";
+    }
+}
+
 export const removeHTMLElement = (id) =>{
     var element = document.getElementById(id);
     element.style.display = "none";
+}
+
+export const removeHTMLElementByClass = (className) =>{
+    var element = document.getElementsByClassName(className);
+
+    for(var i = 0 ; i < element.length; i++){
+        element[i].style.display = "none";
+    }
 }
 
 function checkTime(i)
