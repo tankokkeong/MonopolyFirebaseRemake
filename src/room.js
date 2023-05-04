@@ -21,6 +21,7 @@ var roomID;
 var userID;
 var username;
 var IAmReady = false;
+var roomExistsBefore = false;
 
 const gamePiece =
 [`<i class="fa fa-car player-color-1" aria-hidden="true"></i> `,
@@ -79,6 +80,16 @@ onAuthStateChanged(auth, (user) => {
                             //Check room exists
                             get(child(dbRef, `rooms/${roomID}`)).then((snapshot) => {
                                 if(snapshot.exists()){
+
+                                    //Used to detect whether admin closes the room
+                                    onValue(ref(db, "rooms"), (snapshot) => {
+                                        get(child(dbRef, `rooms/${roomID}`)).then((snapshot) => {
+                                            if(!snapshot.exists()){
+                                                route("Home", "AdminClosed");
+                                            }
+                                        });
+                                    });
+
                                     JoinRoom(userID);
 
                                     //Display player List
@@ -204,6 +215,7 @@ onAuthStateChanged(auth, (user) => {
         }).catch((error) => {
             console.error(error);
         });
+
     }
 });
 

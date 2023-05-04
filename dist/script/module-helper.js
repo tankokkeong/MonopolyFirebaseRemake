@@ -75,6 +75,16 @@ export const setFormValue = (id, value) => {
     form.value = value;
 }
 
+export const displayHTMLElement = (id) =>{
+    var element = document.getElementById(id);
+    element.style.display = "";
+}
+
+export const removeHTMLElement = (id) =>{
+    var element = document.getElementById(id);
+    element.style.display = "none";
+}
+
 function checkTime(i)
 {
 	if(i<10)

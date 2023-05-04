@@ -1,7 +1,9 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { getDatabase, ref, set, child, get, onValue, onDisconnect, remove } from "firebase/database";
-import { displayCustomMessage, route, getFormattedTimeStamp, getTimestamp } from '../dist/script/module-helper';
+import { displayCustomMessage, route, getFormattedTimeStamp, getTimestamp, displayHTMLElement,
+    getUrlParams
+} from '../dist/script/module-helper';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAOaIjem-aPiQrmxn4K6Rnm-X9UcRg9q9c",
@@ -197,4 +199,10 @@ function removeRoom(roomID){
     //Delete the relevant records
     remove(ref(db, 'Connection/' + roomID));
     remove(ref(db, 'rooms/' + roomID));
+}
+
+//Display if admin closed the room
+if(getUrlParams("AdminClosed") != null){
+    displayCustomMessage("home-alert-text", "Your room was removed by Admin!");
+    displayHTMLElement("home-alert");
 }
