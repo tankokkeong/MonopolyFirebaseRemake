@@ -1,8 +1,10 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getDatabase, ref, set, get, child, update, onDisconnect, onValue, query, orderByValue} from "firebase/database";
+import { getDatabase, ref, set, get, child, update, onDisconnect, onValue, query, orderByChild} from "firebase/database";
 import { route, getUrlParams, getFormattedTimeStamp
-    , displayHTMLElementByClass, doubleDigitFormatter 
+    , displayHTMLElementByClass, doubleDigitFormatter, setFormValue 
+    , getFormattedTime,
+    getTimestamp
 } from '../dist/script/module-helper';
 
 const firebaseConfig = {
@@ -23,7 +25,6 @@ var roomID;
 var userID;
 var username;
 var IAmReady = false;
-var roomExistsBefore = false;
 
 const gamePiece =
 [`<i class="fa fa-car player-color-1" aria-hidden="true"></i> `,
@@ -48,6 +49,7 @@ const playerPieceOnBoard =
 
 const StartBtn = document.getElementById("startBtn");
 const ReadyBtn = document.getElementById("readyBtn");
+const ChatDisplayContainer = document.getElementById("chat-display-container");
 
 onAuthStateChanged(auth, (user) => {
     if (!user) {
@@ -77,6 +79,32 @@ onAuthStateChanged(auth, (user) => {
                                 route("Home", "HostKicked");
                             }
                         });
+                    });
+
+                    //Display chat message
+                    onValue(query(ref(db, "GameChat/" + roomID), orderByChild("timestamp")), (snapshot) => {
+                        //Remove the previous record
+                        ChatDisplayContainer.innerHTML = "";
+
+                        snapshot.forEach((childSnap) => {
+                            ChatDisplayContainer.innerHTML += 
+                            `<div class="mt-2 bg-light chat-message-container">
+
+                                <div class="message-sender">
+                                    <strong>${childSnap.val().sender}</strong>
+                                </div>
+
+                                <span class="chat-message-content">
+                                    ${childSnap.val().message}
+                                </span>
+
+                                <div class="text-right text-muted message-sent-time">
+                                    ${childSnap.val().displayTime}
+                                </div>
+                            </div>`;
+                        });
+
+                        ChatDisplayContainer.scrollTo(0, ChatDisplayContainer.scrollHeight);
                     });
 
                     console.log("b4 check multiple tab")
@@ -465,3 +493,32 @@ function gameTimer(date) {
     }, 1000);
 
 }
+
+const GameChatInput = document.getElementById("game-chat-input");
+GameChatInput.addEventListener("keyup", (e) =>{
+    if (e.keyCode === 13) {
+        const randomID = crypto.randomUUID();
+        const chatMessage = GameChatInput.value.trim();
+
+        if(chatMessage.length != 0){
+
+            set(ref(db, 'GameChat/' + roomID + "/" + randomID), {
+                sentTime: getFormattedTimeStamp(),
+                displayTime: getFormattedTime(),
+                message: chatMessage,
+                sender: username,
+                senderID: userID,
+                timestamp: getTimestamp()
+            })
+            .then(() => {
+                //Empty the input field
+                setFormValue("game-chat-input", "");
+            });
+        }
+    }
+});
+
+const ChatTab = document.getElementById("nav-chat-tab");
+ChatTab.addEventListener("click", (e) => {
+    ChatDisplayContainer.scrollTo(0, ChatDisplayContainer.scrollHeight);
+});

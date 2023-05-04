@@ -832,9 +832,9 @@
             <div id="game-tab">
                 <nav id="game-tab-container">
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                      <a class="nav-link active text-dark" id="nav-player-tab" data-toggle="tab" href="#nav-player" role="tab" aria-controls="nav-home" aria-selected="true">Players</a>
-                      <a class="nav-link text-dark" id="nav-chat-tab" data-toggle="tab" href="#nav-chat" role="tab" aria-controls="nav-profile" aria-selected="false">Chat</a>
-                      <a class="nav-link text-dark" id="nav-activty-log-tab" data-toggle="tab" href="#nav-activity-log" role="tab" aria-controls="nav-contact" aria-selected="false">Activity Log</a>
+                        <a class="nav-link active text-dark" id="nav-player-tab" data-toggle="tab" href="#nav-player" role="tab" aria-controls="nav-home" aria-selected="true">Players</a>
+                        <a class="nav-link text-dark" id="nav-chat-tab" data-toggle="tab" href="#nav-chat" role="tab" aria-controls="nav-profile" aria-selected="false">Chat</a>
+                        <a class="nav-link text-dark" id="nav-activty-log-tab" data-toggle="tab" href="#nav-activity-log" role="tab" aria-controls="nav-contact" aria-selected="false">Activity Log</a>
                     </div>
                 </nav>
 
@@ -847,69 +847,14 @@
 
                     <div class="tab-pane fade" id="nav-chat" role="tabpanel" aria-labelledby="nav-chat-tab">
                         <div id="chat-display-container">
-                            <div class="mt-2 bg-light chat-message-container">
 
-                                <div class="message-sender">
-                                    <i class="fa fa-bug player-color-2" aria-hidden="true"></i> 
-                                    Player 2 :
-                                </div>
-
-                                <span class="chat-message-content">
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio dolores expedita eligendi 
-                                    reiciendis doloribus repellendus quisquam ipsa voluptatem sapiente, 
-                                    debitis excepturi amet explicabo, labore odio quidem, ratione aliquid consequatur quaerat.
-                                </span>
-
-                                <div class="text-right text-muted message-sent-time">
-                                    11:59 pm
-                                </div>
-                            </div>
-
-                            <div class="mt-2 bg-light chat-message-container">
-
-                                <div class="message-sender">
-                                    <i class="fa fa-car player-color-1" aria-hidden="true"></i>
-                                    Player 1 :
-                                </div>
-
-                                <span class="chat-message-content">
-                                   Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-                                   Quae laudantium sapiente similique non doloremque facere!
-                                </span>
-
-                                <div class="text-right text-muted message-sent-time">
-                                    11:59 pm
-                                </div>
-                            </div>
-
-                            <div class="mt-2 bg-light chat-message-container">
-
-                                <div class="message-sender">
-                                    <i class="fa fa-motorcycle player-color-3" aria-hidden="true"></i>
-                                    Player 3 :
-                                </div>
-
-                                <span class="chat-message-content">
-                                   Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-                                   Quae laudantium sapiente similique non doloremque facere!
-                                </span>
-
-                                <div class="text-right text-muted message-sent-time">
-                                    11:59 pm
-                                </div>
-                            </div>
                         </div>
 
                         <div id="chat-input-container">
-                            <form @submit.prevent="sent">
-                                <input type="text" 
-                                    class="form-control" 
-                                    placeholder="Enter message here"
-                                    id="chat-input"
-                                    v-model="message"
-                                    v-focus
-                                    ref="message">
-                            </form>
+                            <input type="text" 
+                                class="form-control" 
+                                placeholder="Enter message here"
+                                id="game-chat-input">
                         </div>
                     </div>
 

@@ -62,6 +62,19 @@ export const getFormattedTimeStamp = () => {
     return formattedDate + ", " + formattedTime
 }
 
+export const getFormattedTime = () => {
+    // Get Current Timestamp
+    var date = new Date();
+
+    // Get hour and minute
+    var hour = date.getHours();
+	var minute= date.getMinutes();
+
+    var formattedTime = checkTime(hour) + ":" + checkTime(minute);
+
+    return formattedTime;
+}
+
 export const getTimestamp = () => {
     // Get Current Timestamp
     var date = new Date();
