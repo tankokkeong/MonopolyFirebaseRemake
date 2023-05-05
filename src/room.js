@@ -263,6 +263,11 @@ onAuthStateChanged(auth, (user) => {
                                             const updates = {};
                                             updates["GameStatus/" + roomID + "/status"] = "Waiting";
                                             update(ref(db), updates);
+
+                                            //Show start button
+                                            if(hostID == userID){
+                                                StartBtn.style.display = "";
+                                            }
                                         }
 
                                         //Select a new host if the old one left
