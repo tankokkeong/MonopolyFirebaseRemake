@@ -84,6 +84,7 @@ onAuthStateChanged(auth, (user) => {
                                 ReadyBtn.style.display = "none";
                                 removeHTMLElementByClass("kick-btn");
                                 removeHTMLElementByClass("player-ready-state");
+                                startGame();
                             }
                         }
                     });
@@ -567,3 +568,24 @@ const ChatTab = document.getElementById("nav-chat-tab");
 ChatTab.addEventListener("click", (e) => {
     ChatDisplayContainer.scrollTo(0, ChatDisplayContainer.scrollHeight);
 });
+
+function startGame(){
+
+    get(child(dbRef, "Connection/" + roomID)).then((snapshot) => {
+        const userID = [];
+
+        snapshot.forEach((childSnap) => {
+            if(childSnap.val().status == "Online"){
+                userID.push(childSnap.key);
+            }
+        });
+
+        for(var i = 0; i < userID.length; i++){
+            const updates = {};
+            updates["Cash/" + roomID + `/${userID[i]}`] = 20000000;
+            updates["Property/" + roomID + `/${userID[i]}`] = 0;
+            update(ref(db), updates);
+        }
+
+    });
+}
