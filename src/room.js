@@ -4,7 +4,7 @@ import { getDatabase, ref, set, get, child, update, onDisconnect, onValue, query
 import { route, getUrlParams, getFormattedTimeStamp
     , displayHTMLElementByClass, doubleDigitFormatter, setFormValue 
     , getFormattedTime, getTimestamp, removeHTMLElementByClass, displayCustomMessage,
-    displayHTMLElement, priceFormatter
+    displayHTMLElement, priceFormatter, removeHTMLElement
 } from '../dist/script/module-helper';
 
 const firebaseConfig = {
@@ -82,6 +82,7 @@ onAuthStateChanged(auth, (user) => {
                                 removeHTMLElementByClass("kick-btn");
                                 removeHTMLElementByClass("player-ready-state");
                                 startGame();
+                                gameStartedTimer();
                             }
                         }
                     });
@@ -597,4 +598,23 @@ function startGame(){
         }
 
     });
+}
+
+function gameStartedTimer(){
+
+    var seconds = 3;
+
+    var x = setInterval(function() {
+
+        displayCustomMessage("game-started-warning", 
+        `The game will be started in ${seconds} second(s)`);
+        displayHTMLElement("game-started-warning");
+        
+        seconds--;
+        if (seconds == -2) {
+            removeHTMLElement("game-started-warning");
+            clearInterval(x);
+        }
+    }, 1000);
+
 }

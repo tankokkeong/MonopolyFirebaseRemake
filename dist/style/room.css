@@ -549,6 +549,18 @@ html::-webkit-scrollbar-thumb {
     padding-left: 20px;
 }
 
+#game-warning-container{
+    position: absolute;
+    bottom: 50px;
+    width: 100%;
+    padding-left: 200px;
+    padding-right: 200px;
+}
+
+#game-started-warning{
+    border: 2px solid black;
+}
+
 @media (min-width:1200px){
     .game-container{
         display: flex;
