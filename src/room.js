@@ -162,6 +162,9 @@ onAuthStateChanged(auth, (user) => {
                                         //Remove the previous html tag
                                         playerListContainer.innerHTML = "";
 
+                                        //Remove user pieces by Default
+                                        removeHTMLElementByClass("player-choice");
+
                                         snapshot.forEach((childSnapshot) => {
                                             var IsYou = "";
                                             const host = childSnapshot.val().hasOwnProperty("host") ? 
@@ -175,9 +178,6 @@ onAuthStateChanged(auth, (user) => {
                                             `<button class='btn btn-danger ml-1 kick-btn p-1' data-value="${childSnapshot.key}" style="display:none;">
                                                 <i class='fa fa-trash' aria-hidden='true'></i>
                                             </button>`;
-
-                                            // Display user's piece
-                                            displayHTMLElement(`player-${childSnapshot.val().pieceIndex + 1}`);
 
                                             //Check if the user is kicked
                                             if(childSnapshot.val().hasOwnProperty("kicked") && childSnapshot.key == userID){
@@ -196,6 +196,9 @@ onAuthStateChanged(auth, (user) => {
                                             var ready = "";
 
                                             if(childSnapshot.val().status == "Online"){
+
+                                                // Display user's piece
+                                                displayHTMLElement(`player-${childSnapshot.val().pieceIndex + 1}`);
 
                                                 if(childSnapshot.val().hasOwnProperty("gameStatus")){
                                                     if(childSnapshot.val().gameStatus === "Ready"){
@@ -254,6 +257,18 @@ onAuthStateChanged(auth, (user) => {
                                             }
                                             
                                         });
+
+                                        //Select a new host if the old one left
+                                        if(hostCount == 0){
+                                            const userInfo = {
+                                                status : "Online",
+                                                name: username,
+                                                host: true,
+                                                pieceIndex: 0
+                                            };
+                
+                                            set(ref(db, "Connection/" + roomID + "/" + userID), userInfo)
+                                        }
 
                                         if(playerInRoom - 1 == readyUser && playerInRoom != 1){
                                             StartBtn.disabled = false;
