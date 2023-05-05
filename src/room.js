@@ -3,11 +3,8 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, set, get, child, update, onDisconnect, onValue, query, orderByChild} from "firebase/database";
 import { route, getUrlParams, getFormattedTimeStamp
     , displayHTMLElementByClass, doubleDigitFormatter, setFormValue 
-    , getFormattedTime,
-    getTimestamp,
-    removeHTMLElementByClass,
-    displayCustomMessage,
-    displayHTMLElement
+    , getFormattedTime, getTimestamp, removeHTMLElementByClass, displayCustomMessage,
+    displayHTMLElement, priceFormatter
 } from '../dist/script/module-helper';
 
 const firebaseConfig = {
@@ -233,7 +230,7 @@ onAuthStateChanged(auth, (user) => {
                                                         <span class="text-success">
                                                             RM 
                                                             <span id="player-` + childSnapshot.key + `-balance">
-                                                                20,000,000
+                                                                -
                                                             </span>
                                                             
                                                         </span>
@@ -241,7 +238,7 @@ onAuthStateChanged(auth, (user) => {
 
                                                     <div class="player-property-container">
                                                         <i class="fa fa-home" aria-hidden="true"></i>
-                                                        <span class="text-info" id="player-`+ childSnapshot.key + `-property">0</span>
+                                                        <span class="text-info" id="player-`+ childSnapshot.key + `-property">-</span>
                                                     </div>
                                                 </div>`; 
 
@@ -315,10 +312,22 @@ onAuthStateChanged(auth, (user) => {
 
                                     });
 
-                                    const connectionRef = ref(db, "Connection/" + roomID + "/" + userID);
+                                    //Listen for Cash Changes
+                                    onValue(ref(db, "Cash/" + roomID + "/"), (snapshot) => {
+                                        snapshot.forEach((childSnap) =>{
+                                            displayCustomMessage(`player-${childSnap.key}-balance`, priceFormatter(childSnap.val().balance));
+                                        });
+                                    });
+
+                                    //Listen for Property Changes
+                                    onValue(ref(db, "Property/" + roomID + "/"), (snapshot) => {
+                                        snapshot.forEach((childSnap) =>{
+                                            displayCustomMessage(`player-${childSnap.key}-property`, priceFormatter(childSnap.val().quantity));
+                                        });
+                                    });
 
                                     //If disconnected
-                                    onDisconnect(connectionRef).set({
+                                    onDisconnect(ref(db, "Connection/" + roomID + "/" + userID)).set({
                                         status: "Offline"
                                     });
                 
@@ -582,8 +591,8 @@ function startGame(){
 
         for(var i = 0; i < userID.length; i++){
             const updates = {};
-            updates["Cash/" + roomID + `/${userID[i]}`] = 20000000;
-            updates["Property/" + roomID + `/${userID[i]}`] = 0;
+            updates["Cash/" + roomID + `/${userID[i]}/balance`] = 20000000;
+            updates["Property/" + roomID + `/${userID[i]}/quantity`] = 0;
             update(ref(db), updates);
         }
 

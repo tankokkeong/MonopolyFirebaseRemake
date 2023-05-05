@@ -118,6 +118,10 @@ export const doubleDigitFormatter = (i) =>{
 	return checkTime(i);
 }
 
+export const priceFormatter = (amount) => {
+    return Intl.NumberFormat('en-US').format(amount * 1);
+}
+
 function checkTime(i)
 {
 	if(i<10)
