@@ -4,7 +4,10 @@ import { getDatabase, ref, set, get, child, update, onDisconnect, onValue, query
 import { route, getUrlParams, getFormattedTimeStamp
     , displayHTMLElementByClass, doubleDigitFormatter, setFormValue 
     , getFormattedTime,
-    getTimestamp
+    getTimestamp,
+    removeHTMLElementByClass,
+    displayCustomMessage,
+    displayHTMLElement
 } from '../dist/script/module-helper';
 
 const firebaseConfig = {
@@ -72,6 +75,19 @@ onAuthStateChanged(auth, (user) => {
                     route("Home");
                 }
                 else{
+                    //Check if game started
+                    onValue(ref(db, "GameStatus/" + roomID + "/"), (snapshot) => {
+                        if(snapshot.exists()){
+                            if(snapshot.val().status == "Started"){
+                                //Remove action button
+                                StartBtn.style.display = "none";
+                                ReadyBtn.style.display = "none";
+                                removeHTMLElementByClass("kick-btn");
+                                removeHTMLElementByClass("player-ready-state");
+                            }
+                        }
+                    });
+
                     //Check kicked
                     onValue(ref(db, "Kicked/" + roomID + "/"), (snapshot) => {
                         snapshot.forEach((childSnap) =>{
@@ -159,6 +175,9 @@ onAuthStateChanged(auth, (user) => {
                                             `<button class='btn btn-danger ml-1 kick-btn p-1' data-value="${childSnapshot.key}" style="display:none;">
                                                 <i class='fa fa-trash' aria-hidden='true'></i>
                                             </button>`;
+
+                                            // Display user's piece
+                                            displayHTMLElement(`player-${childSnapshot.val().pieceIndex + 1}`);
 
                                             //Check if the user is kicked
                                             if(childSnapshot.val().hasOwnProperty("kicked") && childSnapshot.key == userID){
