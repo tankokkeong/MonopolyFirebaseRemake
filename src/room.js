@@ -258,6 +258,13 @@ onAuthStateChanged(auth, (user) => {
                                             
                                         });
 
+                                        //If less than two player game status become waiting
+                                        if(playerInRoom < 2){
+                                            const updates = {};
+                                            updates["GameStatus/" + roomID + "/status"] = "Waiting";
+                                            update(ref(db), updates);
+                                        }
+
                                         //Select a new host if the old one left
                                         if(hostCount == 0){
                                             const userInfo = {
@@ -432,9 +439,7 @@ ReadyBtn.addEventListener("click", (e) => {
     if(!IAmReady){
         const updates = {};
         updates["Connection/" + roomID + "/" + userID + "/" + "gameStatus"] = "Ready";
-        update(ref(db), updates).then((message) => {
-            console.log("I am ready!", message);
-        });
+        update(ref(db), updates);
         IAmReady = true;
         ReadyBtn.innerHTML = "Cancel Ready";
         ReadyBtn.style.background = "#ffcc00";
