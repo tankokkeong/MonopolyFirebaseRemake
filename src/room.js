@@ -4,7 +4,7 @@ import { getDatabase, ref, set, get, child, update, onDisconnect, onValue, query
 import { route, getUrlParams, getFormattedTimeStamp
     , displayHTMLElementByClass, doubleDigitFormatter, setFormValue 
     , getFormattedTime, getTimestamp, removeHTMLElementByClass, displayCustomMessage,
-    displayHTMLElement, priceFormatter, removeHTMLElement
+    displayHTMLElement, priceFormatter, removeHTMLElement, setCookie, getCookie
 } from '../dist/script/module-helper';
 
 const firebaseConfig = {
@@ -90,10 +90,6 @@ onAuthStateChanged(auth, (user) => {
                                 removeHTMLElementByClass("player-ready-state");
                                 startGame();
                                 gameStartedTimer();
-
-                                if(myPiecePosition == 0){
-                                    displayHTMLElement("dice-display-container");
-                                }
                             }
                         }
                     });
@@ -161,20 +157,20 @@ onAuthStateChanged(auth, (user) => {
 
                                     //Used to detect the room changes
                                     onValue(ref(db, "rooms/" + roomID), (snapshot) => {
-                                        currentSeqeunce = snapshot.val().CurrentPlayerSequence;
-                                        currentRoomDice = snapshot.val().CurrentDiceNumber;
-                                        diceStatus = snapshot.val().DiceStatus;
-                                        diceRoller = snapshot.val().DiceRoller;
+                                        setCookie("currentSeqeunce", snapshot.val().CurrentPlayerSequence, 7);
+                                        setCookie("currentRoomDice", snapshot.val().CurrentDiceNumber, 7);
+                                        setCookie("diceStatus", snapshot.val().DiceStatus, 7);
+                                        setCookie("diceRoller", snapshot.val().DiceRoller, 7);
 
-                                        if(diceStatus == "Stopped"){
+                                        if(getCookie("diceStatus") == "Stopped"){
                                             //Remove the dice container
                                             setTimeout(function(){
                                                 removeHTMLElement("dice-display-container");
                                             }, 2000);
                                         }
-                                        else if(diceStatus == "Rolling"){
-                                            if(diceRoller != username){
-                                                displayLiveDice(diceRoller);
+                                        else if(getCookie("diceStatus") == "Rolling"){
+                                            if(getCookie("diceRoller") != username){
+                                                displayLiveDice(getCookie("diceRoller"));
                                             }
                                         }
                                     });
@@ -646,6 +642,10 @@ function gameStartedTimer(){
         if (seconds == -2) {
             removeHTMLElement("game-started-warning");
             clearInterval(x);
+
+            if(myPiecePosition == 0){
+                displayHTMLElement("dice-display-container");
+            }
         }
     }, 1000);
 
@@ -653,49 +653,50 @@ function gameStartedTimer(){
 
 function displayLiveDice(playersTurn){
 
-    if(liveDiceCounter == 0){
-        displayHTMLElement("dice-display-container");
-        displayCustomMessage("dice-number", "Dice Rolling...");
-        displayCustomMessage("dice-timer", `It's ${playersTurn} 's turn now`);
-    }
+    const intervalID = setInterval(() => {
+        if(liveDiceCounter == 0){
+            displayHTMLElement("dice-display-container");
+            displayCustomMessage("dice-number", "Dice Rolling...");
+            displayCustomMessage("dice-timer", `It's ${playersTurn} 's turn now`);
+        }
+        
+        liveDiceCounter++;
     
-    liveDiceCounter++;
-
-    var index = Math.ceil(Math.random()* 6);
-    var diceArray =
-    ['0',
-        `<div class="dot dot-one"></div>`,
-        `<div class="dot dot-two-one"></div>
-        <div class="dot dot-two-two"></div>`,
-        `<div class="dot dot-three-one"></div>
-        <div class="dot dot-three-two"></div>
-        <div class="dot dot-three-three"></div>`,
-        `<div class="dot dot-four-one"></div>
-        <div class="dot dot-four-two"></div>
-        <div class="dot dot-four-three"></div>
-        <div class="dot dot-four-four"></div>`,
-        `<div class="dot dot-five-one"></div>
-        <div class="dot dot-five-two"></div>
-        <div class="dot dot-five-three"></div>
-        <div class="dot dot-five-four"></div>
-        <div class="dot dot-five-five"></div>`,
-        `<div class="dot dot-six-one"></div>
-        <div class="dot dot-six-two"></div>
-        <div class="dot dot-six-three"></div>
-        <div class="dot dot-six-four"></div>
-        <div class="dot dot-six-five"></div>
-        <div class="dot dot-six-six"></div>`
-    ];
-
-    displayCustomMessage("dice-container", diceArray[index]);
+        var index = Math.ceil(Math.random()* 6);
+        var diceArray =
+        ['0',
+            `<div class="dot dot-one"></div>`,
+            `<div class="dot dot-two-one"></div>
+            <div class="dot dot-two-two"></div>`,
+            `<div class="dot dot-three-one"></div>
+            <div class="dot dot-three-two"></div>
+            <div class="dot dot-three-three"></div>`,
+            `<div class="dot dot-four-one"></div>
+            <div class="dot dot-four-two"></div>
+            <div class="dot dot-four-three"></div>
+            <div class="dot dot-four-four"></div>`,
+            `<div class="dot dot-five-one"></div>
+            <div class="dot dot-five-two"></div>
+            <div class="dot dot-five-three"></div>
+            <div class="dot dot-five-four"></div>
+            <div class="dot dot-five-five"></div>`,
+            `<div class="dot dot-six-one"></div>
+            <div class="dot dot-six-two"></div>
+            <div class="dot dot-six-three"></div>
+            <div class="dot dot-six-four"></div>
+            <div class="dot dot-six-five"></div>
+            <div class="dot dot-six-six"></div>`
+        ];
     
-    if(diceStatus == "Rolling"){
-        displayLiveDice(playersTurn);
-    }
-    else{
-        liveDiceCounter = 0;
-        displayCustomMessage("dice-number", `${playersTurn} has gotten a ${currentRoomDice} out of the rolled dice!`);
-    }
+        displayCustomMessage("dice-container", diceArray[index]);
+        
+        if(getCookie("diceStatus") == "Stopped"){
+            liveDiceCounter = 0;
+            displayCustomMessage("dice-container", diceArray[getCookie("currentRoomDice")]);
+            displayCustomMessage("dice-number", `${playersTurn} has gotten a ${getCookie("currentRoomDice")} out of the rolled dice!`);
+            clearInterval(intervalID);
+        }
+    }, 100);
 
 }
 
@@ -769,7 +770,7 @@ function myTurnToRollDice(){
         //Set the current dice number
         const updates = {};
         updates["rooms/" + roomID + `/CurrentDiceNumber`] = index;
-        updates["rooms/" + roomID + `/CurrentPlayerSequence`] = determineNextSequence(currentSeqeunce);
+        updates["rooms/" + roomID + `/CurrentPlayerSequence`] = determineNextSequence(parseInt(getCookie("currentSeqeunce")));
         updates["rooms/" + roomID + `/DiceStatus`] = "Stopped";
         update(ref(db), updates);
         
@@ -783,11 +784,12 @@ rollDiceBtn.addEventListener("click", (e) => {
 
 function determineNextSequence(sequence){
     if(sequence < 3){
-        currentSeqeunce = sequence + 1
+        sequence = sequence + 1
     }
     else{
-        currentSeqeunce = 0;
+        sequence = 0;
     }
 
-    return currentSeqeunce;
+    setCookie("currentSeqeunce", sequence, 7);
+    return sequence;
 }
