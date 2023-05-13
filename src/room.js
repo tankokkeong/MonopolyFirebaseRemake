@@ -24,8 +24,14 @@ const dbRef = ref(getDatabase());
 var roomID;
 var userID;
 var username;
+var myPiecePosition;
 var IAmReady = false;
+var currentSeqeunce;
+var currentRoomDice;
+var diceStatus;
+var diceRoller;
 var diceCounter = 0;
+var liveDiceCounter = 0;
 
 const gamePiece =
 [`<i class="fa fa-car player-color-1" aria-hidden="true"></i> `,
@@ -52,310 +58,335 @@ const StartBtn = document.getElementById("startBtn");
 const ReadyBtn = document.getElementById("readyBtn");
 const ChatDisplayContainer = document.getElementById("chat-display-container");
 
-// onAuthStateChanged(auth, (user) => {
-//     if (!user) {
-//         route("Index");
-//     } 
-//     else{
-//         userID = user.uid;
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        route("Index");
+    } 
+    else{
+        userID = user.uid;
 
-//         // Set user online
-//         set(ref(db, 'Online/' + userID), {
-//             recordTime: getFormattedTimeStamp(),
-//             status: "Online"
-//         });
+        // Set user online
+        set(ref(db, 'Online/' + userID), {
+            recordTime: getFormattedTimeStamp(),
+            status: "Online"
+        });
 
-//         get(child(dbRef, `users/${userID}`)).then((snapshot) => {
-//             if (snapshot.exists()) {
-//                 username = snapshot.val().username;
-//                 roomID = getUrlParams("room");
-//                 if(roomID == null){
-//                     route("Home");
-//                 }
-//                 else{
-//                     //Check if game started
-//                     onValue(ref(db, "GameStatus/" + roomID + "/"), (snapshot) => {
-//                         if(snapshot.exists()){
-//                             if(snapshot.val().status == "Started"){
-//                                 //Remove action button
-//                                 StartBtn.style.display = "none";
-//                                 ReadyBtn.style.display = "none";
-//                                 removeHTMLElementByClass("kick-btn");
-//                                 removeHTMLElementByClass("player-ready-state");
-//                                 startGame();
-//                                 gameStartedTimer();
-//                             }
-//                         }
-//                     });
+        get(child(dbRef, `users/${userID}`)).then((snapshot) => {
+            if (snapshot.exists()) {
+                username = snapshot.val().username;
+                roomID = getUrlParams("room");
+                if(roomID == null){
+                    route("Home");
+                }
+                else{
+                    //Check if game started
+                    onValue(ref(db, "GameStatus/" + roomID + "/"), (snapshot) => {
+                        if(snapshot.exists()){
+                            if(snapshot.val().status == "Started"){
+                                //Remove action button
+                                StartBtn.style.display = "none";
+                                ReadyBtn.style.display = "none";
+                                removeHTMLElementByClass("kick-btn");
+                                removeHTMLElementByClass("player-ready-state");
+                                startGame();
+                                gameStartedTimer();
 
-//                     //Check kicked
-//                     onValue(ref(db, "Kicked/" + roomID + "/"), (snapshot) => {
-//                         snapshot.forEach((childSnap) =>{
-//                             if(childSnap.key == userID){
-//                                 route("Home", "HostKicked");
-//                             }
-//                         });
-//                     });
+                                if(myPiecePosition == 0){
+                                    displayHTMLElement("dice-display-container");
+                                }
+                            }
+                        }
+                    });
 
-//                     //Display chat message
-//                     onValue(query(ref(db, "GameChat/" + roomID), orderByChild("timestamp")), (snapshot) => {
-//                         //Remove the previous record
-//                         ChatDisplayContainer.innerHTML = "";
+                    //Check kicked
+                    onValue(ref(db, "Kicked/" + roomID + "/"), (snapshot) => {
+                        snapshot.forEach((childSnap) =>{
+                            if(childSnap.key == userID){
+                                route("Home", "HostKicked");
+                            }
+                        });
+                    });
 
-//                         snapshot.forEach((childSnap) => {
-//                             ChatDisplayContainer.innerHTML += 
-//                             `<div class="mt-2 bg-light chat-message-container">
+                    //Display chat message
+                    onValue(query(ref(db, "GameChat/" + roomID), orderByChild("timestamp")), (snapshot) => {
+                        //Remove the previous record
+                        ChatDisplayContainer.innerHTML = "";
 
-//                                 <div class="message-sender">
-//                                     <strong>${childSnap.val().sender}</strong>
-//                                 </div>
+                        snapshot.forEach((childSnap) => {
+                            ChatDisplayContainer.innerHTML += 
+                            `<div class="mt-2 bg-light chat-message-container">
 
-//                                 <span class="chat-message-content">
-//                                     ${childSnap.val().message}
-//                                 </span>
+                                <div class="message-sender">
+                                    <strong>${childSnap.val().sender}</strong>
+                                </div>
 
-//                                 <div class="text-right text-muted message-sent-time">
-//                                     ${childSnap.val().displayTime}
-//                                 </div>
-//                             </div>`;
-//                         });
+                                <span class="chat-message-content">
+                                    ${childSnap.val().message}
+                                </span>
 
-//                         ChatDisplayContainer.scrollTo(0, ChatDisplayContainer.scrollHeight);
-//                     });
+                                <div class="text-right text-muted message-sent-time">
+                                    ${childSnap.val().displayTime}
+                                </div>
+                            </div>`;
+                        });
 
-//                     console.log("b4 check multiple tab")
-//                     //Check if there are multiple tabs with the same account
-//                     get(child(dbRef, `Connection/${roomID}/${userID}`)).then((snapshot) => {
+                        ChatDisplayContainer.scrollTo(0, ChatDisplayContainer.scrollHeight);
+                    });
 
-//                         if(snapshot.exists() && snapshot.val().status == "Online"){
-//                             route("Home", "MultipleAccount");
-//                         }
-//                         else
-//                         {
-//                             console.log("b4 check room exists")
+                    console.log("b4 check multiple tab")
+                    //Check if there are multiple tabs with the same account
+                    get(child(dbRef, `Connection/${roomID}/${userID}`)).then((snapshot) => {
 
-//                             //Check room exists
-//                             get(child(dbRef, `rooms/${roomID}`)).then((snapshot) => {
-//                                 if(snapshot.exists()){
-//                                     //Display game timer
-//                                     gameTimer(snapshot.val().createdAt);
+                        if(snapshot.exists() && snapshot.val().status == "Online"){
+                            route("Home", "MultipleAccount");
+                        }
+                        else
+                        {
+                            console.log("b4 check room exists")
 
-//                                     //Used to detect whether admin closes the room
-//                                     onValue(ref(db, "rooms"), (snapshot) => {
-//                                         get(child(dbRef, `AdminClosed/${roomID}`)).then((snapshot) => {
-//                                             if(snapshot.exists()){
-//                                                 route("Home", "AdminClosed");
-//                                             }
-//                                         });
-//                                     });
+                            //Check room exists
+                            get(child(dbRef, `rooms/${roomID}`)).then((snapshot) => {
+                                if(snapshot.exists()){
+                                    //Display game timer
+                                    gameTimer(snapshot.val().createdAt);
 
-//                                     JoinRoom(userID);
+                                    //Used to detect whether admin closes the room
+                                    onValue(ref(db, "rooms"), (snapshot) => {
+                                        get(child(dbRef, `AdminClosed/${roomID}`)).then((snapshot) => {
+                                            if(snapshot.exists()){
+                                                route("Home", "AdminClosed");
+                                            }
+                                        });
+                                    });
 
-//                                     //Display player List
-//                                     onValue(ref(db, "Connection/" + roomID + "/"), (snapshot) => {
-//                                         const playerListContainer = document.getElementById("player-display-list");
-//                                         var playerInRoom = 0;
-//                                         var readyUser = 0;
-//                                         var hostCount = 0;
-//                                         var hostID = "";
+                                    //Used to detect the room changes
+                                    onValue(ref(db, "rooms/" + roomID), (snapshot) => {
+                                        currentSeqeunce = snapshot.val().CurrentPlayerSequence;
+                                        currentRoomDice = snapshot.val().CurrentDiceNumber;
+                                        diceStatus = snapshot.val().DiceStatus;
+                                        diceRoller = snapshot.val().DiceRoller;
 
-//                                         //Remove the previous html tag
-//                                         playerListContainer.innerHTML = "";
+                                        if(diceStatus == "Stopped"){
+                                            //Remove the dice container
+                                            setTimeout(function(){
+                                                removeHTMLElement("dice-display-container");
+                                            }, 2000);
+                                        }
+                                        else if(diceStatus == "Rolling"){
+                                            if(diceRoller != username){
+                                                displayLiveDice(diceRoller);
+                                            }
+                                        }
+                                    });
 
-//                                         //Remove user pieces by Default
-//                                         removeHTMLElementByClass("player-choice");
+                                    JoinRoom(userID);
 
-//                                         snapshot.forEach((childSnapshot) => {
-//                                             var IsYou = "";
-//                                             const host = childSnapshot.val().hasOwnProperty("host") ? 
-//                                             `<span id="player-` + childSnapshot.key + `-host-state" class="room-host">
-//                                             <i class="fa fa-user-circle" aria-hidden="true"></i>
-//                                             </span>` : "";
+                                    //Display player List
+                                    onValue(ref(db, "Connection/" + roomID + "/"), (snapshot) => {
+                                        const playerListContainer = document.getElementById("player-display-list");
+                                        var playerInRoom = 0;
+                                        var readyUser = 0;
+                                        var hostCount = 0;
+                                        var hostID = "";
 
-//                                             const kickAction = childSnapshot.val().hasOwnProperty("host") ? 
-//                                             "" 
-//                                             :
-//                                             `<button class='btn btn-danger ml-1 kick-btn p-1' data-value="${childSnapshot.key}" style="display:none;">
-//                                                 <i class='fa fa-trash' aria-hidden='true'></i>
-//                                             </button>`;
+                                        //Remove the previous html tag
+                                        playerListContainer.innerHTML = "";
 
-//                                             //Check if the user is kicked
-//                                             if(childSnapshot.val().hasOwnProperty("kicked") && childSnapshot.key == userID){
-//                                                 route("Home", "HostKicked");
-//                                             }
+                                        //Remove user pieces by Default
+                                        removeHTMLElementByClass("player-choice");
 
-//                                             if(host != ""){
-//                                                 hostCount++;
-//                                                 hostID = childSnapshot.key;
-//                                             }
+                                        snapshot.forEach((childSnapshot) => {
+                                            var IsYou = "";
+                                            const host = childSnapshot.val().hasOwnProperty("host") ? 
+                                            `<span id="player-` + childSnapshot.key + `-host-state" class="room-host">
+                                            <i class="fa fa-user-circle" aria-hidden="true"></i>
+                                            </span>` : "";
 
-//                                             if(childSnapshot.key == userID){
-//                                                 IsYou = "(You)";
-//                                             }
+                                            const kickAction = childSnapshot.val().hasOwnProperty("host") ? 
+                                            "" 
+                                            :
+                                            `<button class='btn btn-danger ml-1 kick-btn p-1' data-value="${childSnapshot.key}" style="display:none;">
+                                                <i class='fa fa-trash' aria-hidden='true'></i>
+                                            </button>`;
 
-//                                             var ready = "";
+                                            //Check if the user is kicked
+                                            if(childSnapshot.val().hasOwnProperty("kicked") && childSnapshot.key == userID){
+                                                route("Home", "HostKicked");
+                                            }
 
-//                                             if(childSnapshot.val().status == "Online"){
+                                            if(host != ""){
+                                                hostCount++;
+                                                hostID = childSnapshot.key;
+                                            }
 
-//                                                 // Display user's piece
-//                                                 displayHTMLElement(`player-${childSnapshot.val().pieceIndex + 1}`);
+                                            if(childSnapshot.key == userID){
+                                                IsYou = "(You)";
+                                                myPiecePosition = childSnapshot.val().pieceIndex;
+                                            }
 
-//                                                 if(childSnapshot.val().hasOwnProperty("gameStatus")){
-//                                                     if(childSnapshot.val().gameStatus === "Ready"){
-//                                                         readyUser++;
-//                                                         ready =  
-//                                                         `<span id="player-` + childSnapshot.key + `-ready-state" class="player-ready-state">
-//                                                         <i class="fa fa-check" aria-hidden="true"></i>
-//                                                         </span>`;
-//                                                     }
-//                                                 }
+                                            var ready = "";
 
-//                                                 playerInRoom++;
+                                            if(childSnapshot.val().status == "Online"){
 
-//                                                 playerListContainer.innerHTML += 
-//                                                 `<div class="player-display-container bg-light text-dark mt-2">
-//                                                     <div class="player-name-container">` +  
-//                                                     gamePiece[childSnapshot.val().pieceIndex]
-//                                                         + `
-//                                                         <span id="player-` + childSnapshot.key +  `-piece"></span>
-//                                                         <span id="player-` + childSnapshot.key +  `-name">
-//                                                             ` + childSnapshot.val().name + IsYou + ` 
-//                                                         </span>`+
-//                                                         host + 
-//                                                         ready +
-//                                                         kickAction +
-//                                                     `</div>
+                                                // Display user's piece
+                                                displayHTMLElement(`player-${childSnapshot.val().pieceIndex + 1}`);
 
-//                                                     <div id="player-balance-container">
-//                                                         <i class="fa fa-money" aria-hidden="true"></i> 
+                                                if(childSnapshot.val().hasOwnProperty("gameStatus")){
+                                                    if(childSnapshot.val().gameStatus === "Ready"){
+                                                        readyUser++;
+                                                        ready =  
+                                                        `<span id="player-` + childSnapshot.key + `-ready-state" class="player-ready-state">
+                                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                                        </span>`;
+                                                    }
+                                                }
 
-//                                                         <span class="text-success">
-//                                                             RM 
-//                                                             <span id="player-` + childSnapshot.key + `-balance">
-//                                                                 -
-//                                                             </span>
+                                                playerInRoom++;
+
+                                                playerListContainer.innerHTML += 
+                                                `<div class="player-display-container bg-light text-dark mt-2">
+                                                    <div class="player-name-container">` +  
+                                                    gamePiece[childSnapshot.val().pieceIndex]
+                                                        + `
+                                                        <span id="player-` + childSnapshot.key +  `-piece"></span>
+                                                        <span id="player-` + childSnapshot.key +  `-name">
+                                                            ` + childSnapshot.val().name + IsYou + ` 
+                                                        </span>`+
+                                                        host + 
+                                                        ready +
+                                                        kickAction +
+                                                    `</div>
+
+                                                    <div id="player-balance-container">
+                                                        <i class="fa fa-money" aria-hidden="true"></i> 
+
+                                                        <span class="text-success">
+                                                            RM 
+                                                            <span id="player-` + childSnapshot.key + `-balance">
+                                                                -
+                                                            </span>
                                                             
-//                                                         </span>
-//                                                     </div>
+                                                        </span>
+                                                    </div>
 
-//                                                     <div class="player-property-container">
-//                                                         <i class="fa fa-home" aria-hidden="true"></i>
-//                                                         <span class="text-info" id="player-`+ childSnapshot.key + `-property">-</span>
-//                                                     </div>
-//                                                 </div>`; 
+                                                    <div class="player-property-container">
+                                                        <i class="fa fa-home" aria-hidden="true"></i>
+                                                        <span class="text-info" id="player-`+ childSnapshot.key + `-property">-</span>
+                                                    </div>
+                                                </div>`; 
 
-//                                             }
+                                            }
 
-//                                             if(hostCount > 1){
-//                                                 const userInfo = {
-//                                                     status : "Online",
-//                                                     name: childSnapshot.val().name,
-//                                                     pieceIndex: childSnapshot.val().pieceIndex + 1
-//                                                 };
+                                            if(hostCount > 1){
+                                                const userInfo = {
+                                                    status : "Online",
+                                                    name: childSnapshot.val().name,
+                                                    pieceIndex: childSnapshot.val().pieceIndex + 1
+                                                };
                     
-//                                                 set(ref(db, "Connection/" + roomID + "/" + childSnapshot.key), userInfo)
-//                                             }
+                                                set(ref(db, "Connection/" + roomID + "/" + childSnapshot.key), userInfo)
+                                            }
                                             
-//                                         });
+                                        });
 
-//                                         //If less than two player game status become waiting
-//                                         if(playerInRoom < 2){
-//                                             const updates = {};
-//                                             updates["GameStatus/" + roomID + "/status"] = "Waiting";
-//                                             update(ref(db), updates);
+                                        //If less than two player game status become waiting
+                                        if(playerInRoom < 2){
+                                            const updates = {};
+                                            updates["GameStatus/" + roomID + "/status"] = "Waiting";
+                                            update(ref(db), updates);
 
-//                                             //Show start button
-//                                             if(hostID == userID){
-//                                                 StartBtn.style.display = "";
-//                                             }
-//                                         }
+                                            //Show start button
+                                            if(hostID == userID){
+                                                StartBtn.style.display = "";
+                                            }
+                                        }
 
-//                                         //Select a new host if the old one left
-//                                         if(hostCount == 0){
-//                                             const userInfo = {
-//                                                 status : "Online",
-//                                                 name: username,
-//                                                 host: true,
-//                                                 pieceIndex: 0
-//                                             };
+                                        //Select a new host if the old one left
+                                        if(hostCount == 0){
+                                            const userInfo = {
+                                                status : "Online",
+                                                name: username,
+                                                host: true,
+                                                pieceIndex: 0
+                                            };
                 
-//                                             set(ref(db, "Connection/" + roomID + "/" + userID), userInfo)
-//                                         }
+                                            set(ref(db, "Connection/" + roomID + "/" + userID), userInfo)
+                                        }
 
-//                                         if(playerInRoom - 1 == readyUser && playerInRoom != 1){
-//                                             StartBtn.disabled = false;
-//                                         }
-//                                         else{
-//                                             StartBtn.disabled = true;
-//                                         }
+                                        if(playerInRoom - 1 == readyUser && playerInRoom != 1){
+                                            StartBtn.disabled = false;
+                                        }
+                                        else{
+                                            StartBtn.disabled = true;
+                                        }
 
-//                                         if(hostID == userID){
-//                                             displayHTMLElementByClass("kick-btn");
+                                        if(hostID == userID){
+                                            displayHTMLElementByClass("kick-btn");
 
-//                                             const KickBtn = document.getElementsByClassName("kick-btn");
-//                                             for(var i = 0; i < KickBtn.length; i++){
-//                                                 KickBtn[i].addEventListener("click", (e) =>{
-//                                                     if(window.confirm("Do you want to kick this player?")){
-//                                                         const kickID = e.currentTarget.getAttribute("data-value");
+                                            const KickBtn = document.getElementsByClassName("kick-btn");
+                                            for(var i = 0; i < KickBtn.length; i++){
+                                                KickBtn[i].addEventListener("click", (e) =>{
+                                                    if(window.confirm("Do you want to kick this player?")){
+                                                        const kickID = e.currentTarget.getAttribute("data-value");
 
-//                                                         set(ref(db, "Kicked/" + roomID + "/" + kickID), {
-//                                                             kickedAt: getFormattedTimeStamp(),
-//                                                         })
-//                                                         .then(() => {
-//                                                             set(ref(db, "Connection/" + roomID + "/" + kickID), {
-//                                                                 status: "Offline",
-//                                                             });
-//                                                         })
+                                                        set(ref(db, "Kicked/" + roomID + "/" + kickID), {
+                                                            kickedAt: getFormattedTimeStamp(),
+                                                        })
+                                                        .then(() => {
+                                                            set(ref(db, "Connection/" + roomID + "/" + kickID), {
+                                                                status: "Offline",
+                                                            });
+                                                        })
                                                         
-//                                                     }
-//                                                 });
-//                                             }
-//                                         }
+                                                    }
+                                                });
+                                            }
+                                        }
 
-//                                     });
+                                    });
 
-//                                     //Listen for Cash Changes
-//                                     onValue(ref(db, "Cash/" + roomID + "/"), (snapshot) => {
-//                                         snapshot.forEach((childSnap) =>{
-//                                             displayCustomMessage(`player-${childSnap.key}-balance`, priceFormatter(childSnap.val().balance));
-//                                         });
-//                                     });
+                                    //Listen for Cash Changes
+                                    onValue(ref(db, "Cash/" + roomID + "/"), (snapshot) => {
+                                        snapshot.forEach((childSnap) =>{
+                                            displayCustomMessage(`player-${childSnap.key}-balance`, priceFormatter(childSnap.val().balance));
+                                        });
+                                    });
 
-//                                     //Listen for Property Changes
-//                                     onValue(ref(db, "Property/" + roomID + "/"), (snapshot) => {
-//                                         snapshot.forEach((childSnap) =>{
-//                                             displayCustomMessage(`player-${childSnap.key}-property`, priceFormatter(childSnap.val().quantity));
-//                                         });
-//                                     });
+                                    //Listen for Property Changes
+                                    onValue(ref(db, "Property/" + roomID + "/"), (snapshot) => {
+                                        snapshot.forEach((childSnap) =>{
+                                            displayCustomMessage(`player-${childSnap.key}-property`, priceFormatter(childSnap.val().quantity));
+                                        });
+                                    });
 
-//                                     //If disconnected
-//                                     onDisconnect(ref(db, "Connection/" + roomID + "/" + userID)).set({
-//                                         status: "Offline"
-//                                     });
+                                    //If disconnected
+                                    onDisconnect(ref(db, "Connection/" + roomID + "/" + userID)).set({
+                                        status: "Offline"
+                                    });
                 
-//                                     onDisconnect(ref(db, "Online/" + userID)).set({
-//                                         recordTime: getFormattedTimeStamp(),
-//                                         status: "Offline"
-//                                     });;
-//                                 }
-//                                 else{
-//                                     route("Home");
-//                                 }
-//                             });
-//                         }
-//                     });
+                                    onDisconnect(ref(db, "Online/" + userID)).set({
+                                        recordTime: getFormattedTimeStamp(),
+                                        status: "Offline"
+                                    });;
+                                }
+                                else{
+                                    route("Home");
+                                }
+                            });
+                        }
+                    });
 
-//                 }
-//             } 
-//             else {
-//                 console.log("Invalid User");
-//             }
-//         }).catch((error) => {
-//             console.error(error);
-//         });
+                }
+            } 
+            else {
+                console.log("Invalid User");
+            }
+        }).catch((error) => {
+            console.error(error);
+        });
 
-//     }
-// });
+    }
+});
 
 function JoinRoom(uid){
     console.log("I am in join")
@@ -620,26 +651,56 @@ function gameStartedTimer(){
 
 }
 
-function displayDice(playersTurn){
-    displayHTMLElement("dice-display-container");
+function displayLiveDice(playersTurn){
 
-    if(playersTurn == userID){
-        displayCustomMessage("dice-timer", "It's your turn now");
+    if(liveDiceCounter == 0){
+        displayHTMLElement("dice-display-container");
+        displayCustomMessage("dice-number", "Dice Rolling...");
+        displayCustomMessage("dice-timer", `It's ${playersTurn} 's turn now`);
+    }
+    
+    liveDiceCounter++;
+
+    var index = Math.ceil(Math.random()* 6);
+    var diceArray =
+    ['0',
+        `<div class="dot dot-one"></div>`,
+        `<div class="dot dot-two-one"></div>
+        <div class="dot dot-two-two"></div>`,
+        `<div class="dot dot-three-one"></div>
+        <div class="dot dot-three-two"></div>
+        <div class="dot dot-three-three"></div>`,
+        `<div class="dot dot-four-one"></div>
+        <div class="dot dot-four-two"></div>
+        <div class="dot dot-four-three"></div>
+        <div class="dot dot-four-four"></div>`,
+        `<div class="dot dot-five-one"></div>
+        <div class="dot dot-five-two"></div>
+        <div class="dot dot-five-three"></div>
+        <div class="dot dot-five-four"></div>
+        <div class="dot dot-five-five"></div>`,
+        `<div class="dot dot-six-one"></div>
+        <div class="dot dot-six-two"></div>
+        <div class="dot dot-six-three"></div>
+        <div class="dot dot-six-four"></div>
+        <div class="dot dot-six-five"></div>
+        <div class="dot dot-six-six"></div>`
+    ];
+
+    displayCustomMessage("dice-container", diceArray[index]);
+    
+    if(diceStatus == "Rolling"){
+        displayLiveDice(playersTurn);
     }
     else{
-        displayCustomMessage("dice-timer", "Loading...");
-
-        get(child(dbRef, "users/" + playersTurn)).then((snapshot) => {
-            if(snapshot.exists()){
-                displayCustomMessage("dice-timer", `It's ${snapshot.val().username} 's turn now`);
-            }
-        });
+        liveDiceCounter = 0;
+        displayCustomMessage("dice-number", `${playersTurn} has gotten a ${currentRoomDice} out of the rolled dice!`);
     }
+
 }
 
-function rollTheDice(){
+function myTurnToRollDice(){
 
-    var result = document.getElementById("dice-number");
     var index = Math.ceil(Math.random()* 6);
     var diceArray =
     ['0',
@@ -666,73 +727,67 @@ function rollTheDice(){
         <div class="dot dot-six-six"></div>`
     ]
 
+    displayCustomMessage("dice-timer", "It's your turn now");
     displayCustomMessage("dice-container", diceArray[index]);
+    displayCustomMessage("dice-number", "");
 
     diceCounter = diceCounter + 1;
 
-    //Empty the results
-    result.innerHTML = "";
+    if(diceCounter == 1){
+
+        //Set the current dice number
+        const updates = {};
+        updates["rooms/" + roomID + `/DiceStatus`] = "Rolling";
+        updates["rooms/" + roomID + `/DiceRoller`] = username;
+        update(ref(db), updates);
+    }
 
     if (diceCounter < 20){
         setTimeout(function(){
-            rollTheDice();
+            myTurnToRollDice();
         }, 5); 
     }
     else if (diceCounter < 120){
         setTimeout(function(){
-            rollTheDice();
+            myTurnToRollDice();
         }, 10); 
     }
     else if(diceCounter < 125){
         setTimeout(function(){
-            rollTheDice();
+            myTurnToRollDice();
         }, 300);  
     }
     else if(diceCounter < 128){
         setTimeout(function(){
-            rollTheDice();
+            myTurnToRollDice();
         }, 500); 
     }
     else{
         diceCounter = 0;
         displayCustomMessage("dice-number", "You have gotten a " + index + " out of the rolled dice!");
-        // var id = this.$route.params.id;
 
-        // //Set the current dice number
-        // const updates = {};
-        // updates["rooms/" + roomID + `/CurrentDiceNumber`] = index;
-        // update(ref(db), updates);
+        //Set the current dice number
+        const updates = {};
+        updates["rooms/" + roomID + `/CurrentDiceNumber`] = index;
+        updates["rooms/" + roomID + `/CurrentPlayerSequence`] = determineNextSequence(currentSeqeunce);
+        updates["rooms/" + roomID + `/DiceStatus`] = "Stopped";
+        update(ref(db), updates);
         
-        // var that = this;
-
-        // //Remove the dice container
-        // setTimeout(function(){
-        //     that.removeDiceContainer();
-            
-        //     roomRef.doc(id).collection("players").doc(that.playerid).get().then((myDoc) =>{
-
-        //         that.movePlayerAnimation(myDoc.data().sequence, index, myDoc.data().position);
-
-        //         var newPosition = index + myDoc.data().position;
-
-        //         if(newPosition > 28){
-        //             newPosition = newPosition - 28;
-        //         }
-
-        //         console.log("New position: " + newPosition)
-
-        //         //Update the player's position
-        //         roomRef.doc(id).collection("players").doc(that.playerid).update({
-        //             position: newPosition
-        //         });
-        //     });
-
-        // }, 3000);
     }
 }
 
 const rollDiceBtn = document.getElementById("dice-roll-trigger");
 rollDiceBtn.addEventListener("click", (e) => {
-    console.log("cLICKED")
-    rollTheDice();
+    myTurnToRollDice();
 });
+
+function determineNextSequence(sequence){
+    if(sequence < 3){
+        currentSeqeunce = sequence + 1
+    }
+    else{
+        currentSeqeunce = 0;
+    }
+
+    return currentSeqeunce;
+}
