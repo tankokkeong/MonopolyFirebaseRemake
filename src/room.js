@@ -173,10 +173,11 @@ onAuthStateChanged(auth, (user) => {
                                         setCookie("Player2Position", snapshot.val().Player2Position, 7);
                                         setCookie("Player3Position", snapshot.val().Player3Position, 7);
                                         setCookie("Player4Position", snapshot.val().Player4Position, 7);
+                                        setCookie("PieceMoving", snapshot.val().PieceMoving, 7);
 
                                         if(getCookie("diceStatus") == "Stopped"){
 
-                                            if(getCookie("GameStatus") == "Started"){
+                                            if(getCookie("GameStatus") == "Started" && getCookie("PieceMoving") == "Yes"){
                                                 //Remove the dice container
                                                 setTimeout(function(){
                                                     removeHTMLElement("dice-display-container");
@@ -764,6 +765,8 @@ function myTurnToRollDice(){
         const updates = {};
         updates["rooms/" + getCookie("roomID") + `/DiceStatus`] = "Rolling";
         updates["rooms/" + getCookie("roomID") + `/DiceRoller`] = getCookie("username");
+        updates["rooms/" + getCookie("roomID") + `/PieceMoving`] = "Yes";
+
         update(ref(db), updates);
     }
 
@@ -869,6 +872,7 @@ function movePlayerPieceByOne(playerNo, origin, currentCounter, diceNumber){
         const sequence = parseInt(getCookie("currentSeqeunce"));
         updates["rooms/" + getCookie("roomID") + `/Player${sequence+1}Position`] = destination;
         updates["rooms/" + getCookie("roomID") + `/CurrentPlayerSequence`] = determineNextSequence(parseInt(getCookie("currentSeqeunce")));
+        updates["rooms/" + getCookie("roomID") + `/PieceMoving`] = "No";
         update(ref(db), updates);
     }
 }

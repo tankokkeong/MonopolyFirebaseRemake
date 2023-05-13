@@ -202,7 +202,8 @@ CreateRoomBtn.addEventListener("click", (e) => {
         Player1Position: 1,
         Player2Position: 1,
         Player3Position: 1,
-        Player4Position: 1
+        Player4Position: 1,
+        PieceMoving: "No"
     })
     .then(() => {
         set(ref(db, 'GameStatus/' + roomID), {
