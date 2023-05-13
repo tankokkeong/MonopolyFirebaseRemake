@@ -63,24 +63,25 @@ onAuthStateChanged(auth, (user) => {
         route("Index");
     } 
     else{
-        userID = user.uid;
+        setCookie("userID", user.uid);
 
         // Set user online
-        set(ref(db, 'Online/' + userID), {
+        set(ref(db, 'Online/' + getCookie("userID")), {
             recordTime: getFormattedTimeStamp(),
             status: "Online"
         });
 
-        get(child(dbRef, `users/${userID}`)).then((snapshot) => {
+        get(child(dbRef, `users/${getCookie("userID")}`)).then((snapshot) => {
             if (snapshot.exists()) {
-                username = snapshot.val().username;
-                roomID = getUrlParams("room");
-                if(roomID == null){
+                setCookie("username", snapshot.val().username);
+                setCookie("roomID", getUrlParams("room"));
+
+                if(getCookie("roomID") == null){
                     route("Home");
                 }
                 else{
                     //Check if game started
-                    onValue(ref(db, "GameStatus/" + roomID + "/"), (snapshot) => {
+                    onValue(ref(db, "GameStatus/" + getCookie("roomID") + "/"), (snapshot) => {
                         if(snapshot.exists()){
                             if(snapshot.val().status == "Started"){
                                 //Remove action button
@@ -92,20 +93,26 @@ onAuthStateChanged(auth, (user) => {
                                 gameStartedTimer();
                                 setCookie("GameStatus", "Started", 7);
                             }
+                            else{
+                                setCookie("GameStatus", "Waiting", 7);
+                            }
+                        }
+                        else{
+                            setCookie("GameStatus", "Waiting", 7);
                         }
                     });
 
                     //Check kicked
-                    onValue(ref(db, "Kicked/" + roomID + "/"), (snapshot) => {
+                    onValue(ref(db, "Kicked/" + getCookie("roomID") + "/"), (snapshot) => {
                         snapshot.forEach((childSnap) =>{
-                            if(childSnap.key == userID){
+                            if(childSnap.key == getCookie("userID")){
                                 route("Home", "HostKicked");
                             }
                         });
                     });
 
                     //Display chat message
-                    onValue(query(ref(db, "GameChat/" + roomID), orderByChild("timestamp")), (snapshot) => {
+                    onValue(query(ref(db, "GameChat/" + getCookie("roomID")), orderByChild("timestamp")), (snapshot) => {
                         //Remove the previous record
                         ChatDisplayContainer.innerHTML = "";
 
@@ -132,7 +139,7 @@ onAuthStateChanged(auth, (user) => {
 
                     console.log("b4 check multiple tab")
                     //Check if there are multiple tabs with the same account
-                    get(child(dbRef, `Connection/${roomID}/${userID}`)).then((snapshot) => {
+                    get(child(dbRef, `Connection/${getCookie("roomID")}/${getCookie("userID")}`)).then((snapshot) => {
 
                         if(snapshot.exists() && snapshot.val().status == "Online"){
                             route("Home", "MultipleAccount");
@@ -142,14 +149,14 @@ onAuthStateChanged(auth, (user) => {
                             console.log("b4 check room exists")
 
                             //Check room exists
-                            get(child(dbRef, `rooms/${roomID}`)).then((snapshot) => {
+                            get(child(dbRef, `rooms/${getCookie("roomID")}`)).then((snapshot) => {
                                 if(snapshot.exists()){
                                     //Display game timer
                                     gameTimer(snapshot.val().createdAt);
 
                                     //Used to detect whether admin closes the room
                                     onValue(ref(db, "rooms"), (snapshot) => {
-                                        get(child(dbRef, `AdminClosed/${roomID}`)).then((snapshot) => {
+                                        get(child(dbRef, `AdminClosed/${getCookie("roomID")}`)).then((snapshot) => {
                                             if(snapshot.exists()){
                                                 route("Home", "AdminClosed");
                                             }
@@ -157,7 +164,7 @@ onAuthStateChanged(auth, (user) => {
                                     });
 
                                     //Used to detect the room changes
-                                    onValue(ref(db, "rooms/" + roomID), (snapshot) => {
+                                    onValue(ref(db, "rooms/" + getCookie("roomID")), (snapshot) => {
                                         setCookie("currentSeqeunce", snapshot.val().CurrentPlayerSequence, 7);
                                         setCookie("currentRoomDice", snapshot.val().CurrentDiceNumber, 7);
                                         setCookie("diceStatus", snapshot.val().DiceStatus, 7);
@@ -174,26 +181,27 @@ onAuthStateChanged(auth, (user) => {
                                                 setTimeout(function(){
                                                     removeHTMLElement("dice-display-container");
 
-                                                    const sequence = parseInt(getCookie("currentSeqeunce")) + 1;
-                                                    const origin = parseInt(getCookie(`Player${sequence}Position`));
+                                                    const sequence = parseInt(getCookie("currentSeqeunce"));
+                                                    const origin = parseInt(getCookie(`Player${sequence + 1}Position`));
                                                     const diceNumber = parseInt(getCookie("currentRoomDice"));
-                                                    console.log(sequence, origin, diceNumber);
-                                                    movePlayerAnimation(sequence, diceNumber, origin); 
+                                                    console.log(sequence, diceNumber, origin);
+                                                    movePlayerAnimation(sequence + 1, diceNumber, origin); 
+
                                                 }, 2000);
                                             }
                                             
                                         }
                                         else if(getCookie("diceStatus") == "Rolling"){
-                                            if(getCookie("diceRoller") != username){
+                                            if(getCookie("diceRoller") != getCookie("username")){
                                                 displayLiveDice(getCookie("diceRoller"));
                                             }
                                         }
                                     });
 
-                                    JoinRoom(userID);
+                                    JoinRoom(getCookie("userID"));
 
                                     //Display player List
-                                    onValue(ref(db, "Connection/" + roomID + "/"), (snapshot) => {
+                                    onValue(ref(db, "Connection/" + getCookie("roomID") + "/"), (snapshot) => {
                                         const playerListContainer = document.getElementById("player-display-list");
                                         var playerInRoom = 0;
                                         var readyUser = 0;
@@ -221,7 +229,7 @@ onAuthStateChanged(auth, (user) => {
                                             </button>`;
 
                                             //Check if the user is kicked
-                                            if(childSnapshot.val().hasOwnProperty("kicked") && childSnapshot.key == userID){
+                                            if(childSnapshot.val().hasOwnProperty("kicked") && childSnapshot.key == getCookie("userID")){
                                                 route("Home", "HostKicked");
                                             }
 
@@ -230,7 +238,7 @@ onAuthStateChanged(auth, (user) => {
                                                 hostID = childSnapshot.key;
                                             }
 
-                                            if(childSnapshot.key == userID){
+                                            if(childSnapshot.key == getCookie("userID")){
                                                 IsYou = "(You)";
                                                 myPiecePosition = childSnapshot.val().pieceIndex;
                                             }
@@ -295,7 +303,7 @@ onAuthStateChanged(auth, (user) => {
                                                     pieceIndex: childSnapshot.val().pieceIndex + 1
                                                 };
                     
-                                                set(ref(db, "Connection/" + roomID + "/" + childSnapshot.key), userInfo)
+                                                set(ref(db, "Connection/" + getCookie("roomID") + "/" + childSnapshot.key), userInfo)
                                             }
                                             
                                         });
@@ -303,25 +311,20 @@ onAuthStateChanged(auth, (user) => {
                                         //If less than two player game status become waiting
                                         if(playerInRoom < 2){
                                             const updates = {};
-                                            updates["GameStatus/" + roomID + "/status"] = "Waiting";
+                                            updates["GameStatus/" + getCookie("roomID") + "/status"] = "Waiting";
                                             update(ref(db), updates);
-
-                                            //Show start button
-                                            if(hostID == userID){
-                                                StartBtn.style.display = "";
-                                            }
                                         }
 
                                         //Select a new host if the old one left
                                         if(hostCount == 0){
                                             const userInfo = {
                                                 status : "Online",
-                                                name: username,
+                                                name: getCookie("username"),
                                                 host: true,
                                                 pieceIndex: 0
                                             };
                 
-                                            set(ref(db, "Connection/" + roomID + "/" + userID), userInfo)
+                                            set(ref(db, "Connection/" + getCookie("roomID") + "/" + getCookie("userID")), userInfo)
                                         }
 
                                         if(playerInRoom - 1 == readyUser && playerInRoom != 1){
@@ -331,7 +334,7 @@ onAuthStateChanged(auth, (user) => {
                                             StartBtn.disabled = true;
                                         }
 
-                                        if(hostID == userID){
+                                        if(hostID == getCookie("userID")){
                                             displayHTMLElementByClass("kick-btn");
 
                                             const KickBtn = document.getElementsByClassName("kick-btn");
@@ -340,11 +343,11 @@ onAuthStateChanged(auth, (user) => {
                                                     if(window.confirm("Do you want to kick this player?")){
                                                         const kickID = e.currentTarget.getAttribute("data-value");
 
-                                                        set(ref(db, "Kicked/" + roomID + "/" + kickID), {
+                                                        set(ref(db, "Kicked/" + getCookie("roomID") + "/" + kickID), {
                                                             kickedAt: getFormattedTimeStamp(),
                                                         })
                                                         .then(() => {
-                                                            set(ref(db, "Connection/" + roomID + "/" + kickID), {
+                                                            set(ref(db, "Connection/" + getCookie("roomID") + "/" + kickID), {
                                                                 status: "Offline",
                                                             });
                                                         })
@@ -352,30 +355,35 @@ onAuthStateChanged(auth, (user) => {
                                                     }
                                                 });
                                             }
+
+                                            StartBtn.style.display = "";
+                                        }
+                                        else{
+                                            StartBtn.style.display = "none";
                                         }
 
                                     });
 
                                     //Listen for Cash Changes
-                                    onValue(ref(db, "Cash/" + roomID + "/"), (snapshot) => {
+                                    onValue(ref(db, "Cash/" + getCookie("roomID") + "/"), (snapshot) => {
                                         snapshot.forEach((childSnap) =>{
                                             displayCustomMessage(`player-${childSnap.key}-balance`, priceFormatter(childSnap.val().balance));
                                         });
                                     });
 
                                     //Listen for Property Changes
-                                    onValue(ref(db, "Property/" + roomID + "/"), (snapshot) => {
+                                    onValue(ref(db, "Property/" + getCookie("roomID") + "/"), (snapshot) => {
                                         snapshot.forEach((childSnap) =>{
                                             displayCustomMessage(`player-${childSnap.key}-property`, priceFormatter(childSnap.val().quantity));
                                         });
                                     });
 
                                     //If disconnected
-                                    onDisconnect(ref(db, "Connection/" + roomID + "/" + userID)).set({
+                                    onDisconnect(ref(db, "Connection/" + getCookie("roomID") + "/" + getCookie("userID"))).set({
                                         status: "Offline"
                                     });
                 
-                                    onDisconnect(ref(db, "Online/" + userID)).set({
+                                    onDisconnect(ref(db, "Online/" + getCookie("userID"))).set({
                                         recordTime: getFormattedTimeStamp(),
                                         status: "Offline"
                                     });;
@@ -402,12 +410,12 @@ onAuthStateChanged(auth, (user) => {
 function JoinRoom(uid){
     console.log("I am in join")
 
-    get(child(dbRef, "Kicked/" + roomID + "/" + uid)).then((snapshot) => {
+    get(child(dbRef, "Kicked/" + getCookie("roomID") + "/" + uid)).then((snapshot) => {
         if(snapshot.exists()){
             route("Home", "KickedRejoin");
         }
         else{
-            get(child(dbRef, "Connection/" + roomID)).then((snapshot) => {
+            get(child(dbRef, "Connection/" + getCookie("roomID"))).then((snapshot) => {
                 var currentInRoom = 0;
                 var alreadyInRoom = false;
         
@@ -415,7 +423,7 @@ function JoinRoom(uid){
                     if(childSnap.val().status == "Online"){
                         currentInRoom++;
         
-                        if(childSnap.key == userID){
+                        if(childSnap.key == getCookie("userID")){
                             alreadyInRoom = true;
                         }
                     }
@@ -436,7 +444,7 @@ function JoinRoom(uid){
                     if(currentInRoom == 0){
                         newUser = {
                             status : "Online",
-                            name: username,
+                            name: getCookie("username"),
                             host: true,
                             pieceIndex: currentInRoom
                         }
@@ -448,7 +456,7 @@ function JoinRoom(uid){
                     {
                         newUser = {
                             status : "Online",
-                            name: username,
+                            name: getCookie("username"),
                             pieceIndex: currentInRoom
                         }
             
@@ -458,7 +466,7 @@ function JoinRoom(uid){
             
                     //If the room is not full
                     if(currentInRoom < 4){
-                        set(ref(db, "Connection/" + roomID + "/" + uid), newUser);
+                        set(ref(db, "Connection/" + getCookie("roomID") + "/" + uid), newUser);
                     }
                     else{
                         route("Home");
@@ -484,7 +492,7 @@ ExitRoomBtn.addEventListener("click", (e) => {
 });
 
 function LeaveRoom(){
-    set(ref(db, "Connection/" + roomID + "/" + userID), {
+    set(ref(db, "Connection/" + getCookie("roomID") + "/" + getCookie("userID")), {
         status : "Offline"
     })
     .then(() => {
@@ -497,7 +505,7 @@ ReadyBtn.addEventListener("click", (e) => {
 
     if(!IAmReady){
         const updates = {};
-        updates["Connection/" + roomID + "/" + userID + "/" + "gameStatus"] = "Ready";
+        updates["Connection/" + getCookie("roomID") + "/" + getCookie("userID") + "/" + "gameStatus"] = "Ready";
         update(ref(db), updates);
         IAmReady = true;
         ReadyBtn.innerHTML = "Cancel Ready";
@@ -506,7 +514,7 @@ ReadyBtn.addEventListener("click", (e) => {
     }
     else{
         const updates = {};
-        updates["Connection/" + roomID + "/" + userID + "/" + "gameStatus"] = "Not Ready";
+        updates["Connection/" + getCookie("roomID") + "/" + getCookie("userID") + "/" + "gameStatus"] = "Not Ready";
         update(ref(db), updates);
         IAmReady = false;
         ReadyBtn.innerHTML = "Get Ready";
@@ -518,7 +526,7 @@ ReadyBtn.addEventListener("click", (e) => {
 
 StartBtn.addEventListener("click", (e) => {
     const updates = {};
-    updates["GameStatus/" + roomID + "/status"] = "Started";
+    updates["GameStatus/" + getCookie("roomID") + "/status"] = "Started";
     update(ref(db), updates);
 });
 
@@ -600,12 +608,12 @@ GameChatInput.addEventListener("keyup", (e) =>{
 
         if(chatMessage.length != 0){
 
-            set(ref(db, 'GameChat/' + roomID + "/" + randomID), {
+            set(ref(db, 'GameChat/' + getCookie("roomID") + "/" + randomID), {
                 sentTime: getFormattedTimeStamp(),
                 displayTime: getFormattedTime(),
                 message: chatMessage,
-                sender: username,
-                senderID: userID,
+                sender: getCookie("username"),
+                senderID: getCookie("userID"),
                 timestamp: getTimestamp()
             })
             .then(() => {
@@ -624,7 +632,7 @@ ChatTab.addEventListener("click", (e) => {
 
 function startGame(){
 
-    get(child(dbRef, "Connection/" + roomID)).then((snapshot) => {
+    get(child(dbRef, "Connection/" + getCookie("roomID"))).then((snapshot) => {
         const userID = [];
 
         snapshot.forEach((childSnap) => {
@@ -635,8 +643,8 @@ function startGame(){
 
         for(var i = 0; i < userID.length; i++){
             const updates = {};
-            updates["Cash/" + roomID + `/${userID[i]}/balance`] = 20000000;
-            updates["Property/" + roomID + `/${userID[i]}/quantity`] = 0;
+            updates["Cash/" + getCookie("roomID") + `/${userID[i]}/balance`] = 20000000;
+            updates["Property/" + getCookie("roomID") + `/${userID[i]}/quantity`] = 0;
             update(ref(db), updates);
         }
 
@@ -670,6 +678,7 @@ function displayLiveDice(playersTurn){
 
     const intervalID = setInterval(() => {
         if(liveDiceCounter == 0){
+            removeHTMLElement("dice-roll-trigger");
             displayHTMLElement("dice-display-container");
             displayCustomMessage("dice-number", "Dice Rolling...");
             displayCustomMessage("dice-timer", `It's ${playersTurn} 's turn now`);
@@ -750,11 +759,11 @@ function myTurnToRollDice(){
     diceCounter = diceCounter + 1;
 
     if(diceCounter == 1){
-
+        removeHTMLElement("dice-roll-trigger");
         //Set the current dice number
         const updates = {};
-        updates["rooms/" + roomID + `/DiceStatus`] = "Rolling";
-        updates["rooms/" + roomID + `/DiceRoller`] = username;
+        updates["rooms/" + getCookie("roomID") + `/DiceStatus`] = "Rolling";
+        updates["rooms/" + getCookie("roomID") + `/DiceRoller`] = getCookie("username");
         update(ref(db), updates);
     }
 
@@ -784,9 +793,8 @@ function myTurnToRollDice(){
 
         //Set the current dice number
         const updates = {};
-        updates["rooms/" + roomID + `/CurrentDiceNumber`] = index;
-        updates["rooms/" + roomID + `/CurrentPlayerSequence`] = determineNextSequence(parseInt(getCookie("currentSeqeunce")));
-        updates["rooms/" + roomID + `/DiceStatus`] = "Stopped";
+        updates["rooms/" + getCookie("roomID") + `/CurrentDiceNumber`] = index;
+        updates["rooms/" + getCookie("roomID") + `/DiceStatus`] = "Stopped";
         update(ref(db), updates);
         
     }
@@ -854,6 +862,14 @@ function movePlayerPieceByOne(playerNo, origin, currentCounter, diceNumber){
         setTimeout(function(){
             movePlayerPieceByOne(playerNo, destination, currentCounter, diceNumber);
         },500);
+    }
+    else{
+        //Set the current dice number
+        const updates = {};
+        const sequence = parseInt(getCookie("currentSeqeunce"));
+        updates["rooms/" + getCookie("roomID") + `/Player${sequence+1}Position`] = destination;
+        updates["rooms/" + getCookie("roomID") + `/CurrentPlayerSequence`] = determineNextSequence(parseInt(getCookie("currentSeqeunce")));
+        update(ref(db), updates);
     }
 }
 
