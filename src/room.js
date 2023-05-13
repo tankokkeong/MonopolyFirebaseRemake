@@ -25,6 +25,7 @@ var roomID;
 var userID;
 var username;
 var myPiecePosition;
+var stopPrice = false;
 var IAmReady = false;
 var currentSeqeunce;
 var currentRoomDice;
@@ -241,7 +242,7 @@ onAuthStateChanged(auth, (user) => {
 
                                             if(childSnapshot.key == getCookie("userID")){
                                                 IsYou = "(You)";
-                                                myPiecePosition = childSnapshot.val().pieceIndex;
+                                                setCookie("myPiecePosition", childSnapshot.val().pieceIndex);
                                             }
 
                                             var ready = "";
@@ -667,7 +668,7 @@ function gameStartedTimer(){
             removeHTMLElement("game-started-warning");
             clearInterval(x);
 
-            if(myPiecePosition == 0){
+            if(getCookie("myPiecePosition") == 0){
                 displayHTMLElement("dice-display-container");
             }
         }
@@ -879,4 +880,34 @@ function movePlayerPieceByOne(playerNo, origin, currentCounter, diceNumber){
 
 function movePlayerAnimation(playerNo, diceNumber, origin){
     movePlayerPieceByOne(playerNo, origin, 0, diceNumber);
+}
+
+function displayPriceDeterminerContainer(){
+
+    //display price determiner container
+    displayHTMLElement("price-determiner-container");
+
+    var offerConfirmation = document.getElementById("offer-confirmation-container");
+    var stopSection = document.getElementById("stop-pricing-section");
+
+    if(getCookie("currentSequence") == getCookie("myPiecePosition")){
+
+    }
+    
+
+}
+
+function priceDeterminerText(){
+
+    setTimeout(function(){
+        if(!stopPrice){
+
+            //Display the random price
+            finalRandomPrice = Math.floor(Math.random() * 4700000) + 300000;
+            displayCustomMessage("price-determiner-display",  priceFormatter(finalRandomPrice));
+            that.rentalPrice = finalRandomPrice;
+            priceDeterminerText();
+        }
+    }, 30);
+
 }
