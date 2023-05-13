@@ -198,7 +198,11 @@ CreateRoomBtn.addEventListener("click", (e) => {
         CurrentDiceNumber : 0,
         CurrentPlayerSequence : 0,
         DiceStatus : "Stopped",
-        DiceRoller: ""
+        DiceRoller: "",
+        Player1Position: 1,
+        Player2Position: 1,
+        Player3Position: 1,
+        Player4Position: 1
     })
     .then(() => {
         set(ref(db, 'GameStatus/' + roomID), {

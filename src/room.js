@@ -90,6 +90,7 @@ onAuthStateChanged(auth, (user) => {
                                 removeHTMLElementByClass("player-ready-state");
                                 startGame();
                                 gameStartedTimer();
+                                setCookie("GameStatus", "Started", 7);
                             }
                         }
                     });
@@ -161,12 +162,26 @@ onAuthStateChanged(auth, (user) => {
                                         setCookie("currentRoomDice", snapshot.val().CurrentDiceNumber, 7);
                                         setCookie("diceStatus", snapshot.val().DiceStatus, 7);
                                         setCookie("diceRoller", snapshot.val().DiceRoller, 7);
+                                        setCookie("Player1Position", snapshot.val().Player1Position, 7);
+                                        setCookie("Player2Position", snapshot.val().Player2Position, 7);
+                                        setCookie("Player3Position", snapshot.val().Player3Position, 7);
+                                        setCookie("Player4Position", snapshot.val().Player4Position, 7);
 
                                         if(getCookie("diceStatus") == "Stopped"){
-                                            //Remove the dice container
-                                            setTimeout(function(){
-                                                removeHTMLElement("dice-display-container");
-                                            }, 2000);
+
+                                            if(getCookie("GameStatus") == "Started"){
+                                                //Remove the dice container
+                                                setTimeout(function(){
+                                                    removeHTMLElement("dice-display-container");
+
+                                                    const sequence = parseInt(getCookie("currentSeqeunce")) + 1;
+                                                    const origin = parseInt(getCookie(`Player${sequence}Position`));
+                                                    const diceNumber = parseInt(getCookie("currentRoomDice"));
+                                                    console.log(sequence, origin, diceNumber);
+                                                    movePlayerAnimation(sequence, diceNumber, origin); 
+                                                }, 2000);
+                                            }
+                                            
                                         }
                                         else if(getCookie("diceStatus") == "Rolling"){
                                             if(getCookie("diceRoller") != username){
@@ -792,4 +807,56 @@ function determineNextSequence(sequence){
 
     setCookie("currentSeqeunce", sequence, 7);
     return sequence;
+}
+
+function pieceMovingSoundEffect(){
+    var music = document.getElementById("moving-piece-sound-effect");
+
+    //Play music
+    music.play();
+}
+
+function movePlayerPieceByOne(playerNo, origin, currentCounter, diceNumber){
+    var player = [ `<div id="player-1" class="player-choice player-color-1">
+                        <i class="fa fa-car" aria-hidden="true"></i>
+                    </div>`,
+                    `<div id="player-2" class="player-choice player-color-2">
+                        <i class="fa fa-bug" aria-hidden="true"></i>
+                    </div>`,
+                    `<div id="player-3" class="player-choice player-color-3">
+                        <i class="fa fa-motorcycle" aria-hidden="true"></i>
+                    </div>`,
+                    `<div id="player-4" class="player-choice player-color-4">
+                        <i class="fa fa-fighter-jet" aria-hidden="true"></i>
+                    </div>`];
+    
+    var originalPlace = document.getElementById("player-piece-container-" + origin + "-" + playerNo);
+    var destination = origin + 1;
+
+    if(destination > 28){
+        destination = destination - 28;
+    }
+
+    var destinationPlace = document.getElementById("player-piece-container-" + destination + "-" + playerNo);
+
+    //remove the old player piece 
+    originalPlace.innerHTML = "";
+    destinationPlace.innerHTML = player[playerNo - 1];
+
+    //play sound effect
+    pieceMovingSoundEffect();
+
+    currentCounter++;
+
+    console.log("Counter", currentCounter, "Dice number", diceNumber)
+
+    if(currentCounter != diceNumber){
+        setTimeout(function(){
+            movePlayerPieceByOne(playerNo, destination, currentCounter, diceNumber);
+        },500);
+    }
+}
+
+function movePlayerAnimation(playerNo, diceNumber, origin){
+    movePlayerPieceByOne(playerNo, origin, 0, diceNumber);
 }
